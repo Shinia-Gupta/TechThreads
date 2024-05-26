@@ -11,9 +11,13 @@ function Signup() {
   useEffect(() => {
     setTimeout(() => setErrorMessage(null), 5000);
   }, [errorMessage]);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [formData]);
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-    console.log(formData);
   };
 
   const handleSubmit = async (e) => {
@@ -32,10 +36,10 @@ function Signup() {
       if (data.success === false) {
         return setErrorMessage(data.message);
       }
-      setLoading(false);
       if (resp.ok) {
         navigate("/signin");
       }
+      setLoading(false);
     } catch (error) {
       setErrorMessage(error.message);
       setLoading(false);
