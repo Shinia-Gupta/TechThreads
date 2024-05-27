@@ -102,7 +102,7 @@ export const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       }).addCase(signinWithGoogleThunk.pending, (state) => {
-        state.loading = true;
+        // state.loading = true;
         state.error = null;  // Clear previous errors
       })
       .addCase(signinWithGoogleThunk.fulfilled, (state, action) => {
