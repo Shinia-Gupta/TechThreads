@@ -1,20 +1,21 @@
 import { Alert, Button, Label, Spinner, TextInput } from "flowbite-react";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { signupThunk, userSelector } from "../redux/app/reducers/userReducer";
 
 function Signup() {
   const [formData, setFormData] = useState({});
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [loading, setLoading] = useState(false);
+const {error,loading}=useSelector(userSelector);
   const navigate = useNavigate();
+const dispatch=useDispatch();
+  // useEffect(() => {
+  //   setTimeout(() => setErrorMessage(null), 5000);
+  // }, [error]);
 
-  useEffect(() => {
-    setTimeout(() => setErrorMessage(null), 5000);
-  }, [errorMessage]);
-
-  useEffect(() => {
-    setLoading(false);
-  }, [formData]);
+  // useEffect(() => {
+  //   setLoading(false);
+  // }, [formData]);
   
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -22,28 +23,12 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.username || !formData.email || !formData.password) {
-      return setErrorMessage("Please fill out all the fields!");
+    const resultAction=await dispatch(signupThunk(formData));
+    console.log(resultAction);
+    if(signupThunk.fulfilled.match(resultAction)){
+      navigate('/signin')
     }
-    try {
-      setLoading(true);
-      const resp = await fetch("/api/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      const data = await resp.json();
-      if (data.success === false) {
-        return setErrorMessage(data.message);
-      }
-      if (resp.ok) {
-        navigate("/signin");
-      }
-      setLoading(false);
-    } catch (error) {
-      setErrorMessage(error.message);
-      setLoading(false);
-    }
+   
   };
   return (
     <>
@@ -113,9 +98,9 @@ function Signup() {
                 Sign In
               </Link>
             </div>
-            {errorMessage && (
+            {error && (
               <Alert className="mt-5" color="failure">
-                {errorMessage}
+                {error}
               </Alert>
             )}
           </div>
