@@ -2,6 +2,7 @@ import User from "../models/user.model.js";
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from "../utils/errorHandler.js";
 import jwt from 'jsonwebtoken';
+import { userReducer } from "../../client/src/redux/reducers/userReducer.js";
 
 export const signup=async(req,res,next)=>{
     const {username,email,password}=req.body;
@@ -42,6 +43,38 @@ const {password:pass,...rest}=validUser._doc;
 res.status(200).cookie('accessToken',token,{
     httpOnly:true
 }).json(rest)
+} catch (error) {
+    next(error)
+}
+}
+
+export const signinWithGoogle=async (req,res,next)=>{
+    const {name,email,googlePhotoUrl}=req.body;
+    try {
+    const existingUser=await User.findOne({email});
+    if(existingUser){
+        const token=jwt.sign({id:existingUser._id},process.env.JWT_SECRET);
+        const {password,...rest}=existingUser._doc;
+        res.status(200).cookie('accessToken',token,{
+            httpOnly:true
+        }).json(rest);
+    }else{
+        const generatePass=Math.random().toString(36).slice(-8);
+        const hashPass=bcryptjs.hashSync(generatePass,10);
+        const newUser=new User({
+            username:name.toLowerCase().split(' ').join('')+Math.random().toString(9).slice(-4),
+            email:email,
+            password:hashPass,
+            profilePicture:googlePhotoUrl
+        })
+        await newUser.save();
+        const token=jwt.sign({id:newUser._id},process.env.JWT_SECRET);
+        const {password,...rest}=newUser._doc;
+        res.status(200).cookie('accessToken',token,{
+            httpOnly:true
+        }).json(rest);
+    }
+
 } catch (error) {
     next(error)
 }
