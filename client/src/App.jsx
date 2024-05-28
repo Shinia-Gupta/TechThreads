@@ -1,5 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Slide, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import Home from "./pages/Home";
 import About from "./pages/AboutPage";
 import Signup from "./pages/Signup";
@@ -27,6 +29,19 @@ function App() {
         </Routes>
         <Footer />
       </BrowserRouter>
+      <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={true}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover={false}
+          theme="dark"
+          transition={Slide}
+          />   
     </>
   );
 }

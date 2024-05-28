@@ -11,7 +11,7 @@ const navigate=useNavigate();
 
 const handleGoogleClick=async()=>{
    const resultAction= await dispatch(signinWithGoogleThunk())
-   console.log(resultAction);
+//    console.log(resultAction);
    if(signinWithGoogleThunk.fulfilled.match(resultAction)){
 navigate('/');
    }

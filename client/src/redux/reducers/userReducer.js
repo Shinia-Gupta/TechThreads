@@ -108,7 +108,7 @@ export const uploadImageThunk = createAsyncThunk('user/updateProfileImage', asyn
 export const updateUserThunk=createAsyncThunk('user/updateUserProfile',async(args,thunkAPI)=>{
   const state = thunkAPI.getState();
   const { currentUser } = state.userReducer;
-  console.log(currentUser,args.formData);
+  // console.log(currentUser,args.formData);
   try{
 const resp=await fetch(`/api/user/update/${currentUser._id}`,{
   method:'PUT',
@@ -126,7 +126,25 @@ return data;
   }
 })
 
+export const deleteUserThunk=createAsyncThunk('user/deleteUser',async(args,thunkAPI)=>{
+  const state = thunkAPI.getState();
+  const { currentUser } = state.userReducer;
+  console.log(currentUser);
+  try{
+const resp=await fetch(`/api/user/delete/${currentUser._id}`,{
+  method:'DELETE',
+  headers:{'Content-Type':'application/json'}
+})
+const data=await resp.json();
 
+if(!resp.ok){
+thunkAPI.rejectWithValue(data.message);
+}
+return data;
+  }catch(error){
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -199,6 +217,21 @@ export const userSlice = createSlice({
         state.message="User's Profile updated successfully! "
       })
       .addCase(updateUserThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteUserThunk.pending, (state) => {
+        state.loading = true;
+                state.error = null;  
+      })
+      .addCase(deleteUserThunk.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.loading = false;
+        state.error = null;
+        state.currentUser =null;
+      
+      })
+      .addCase(deleteUserThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
