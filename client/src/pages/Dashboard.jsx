@@ -10,7 +10,7 @@ function Dashboard() {
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const tabFromUrl = urlParams.get("tab");
-    console.log(tabFromUrl);
+    // console.log(tabFromUrl);
     if (tabFromUrl) {
       setTab(tabFromUrl);
     }
@@ -22,10 +22,8 @@ function Dashboard() {
         {/* Sidebar  */}
         <DashSidebar />
       </div>
-      <div className="">
         {/* Profile  */}
         {tab === "profile" && <DashProfile />}
-      </div>
     </div>
   );
 }

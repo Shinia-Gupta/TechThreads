@@ -1,11 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import {GoogleAuthProvider, getAuth, signInWithPopup} from 'firebase/auth';
 import { app } from '../../config/firebaseInit.js';
+import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage';
 
 const initialState = {
   currentUser: null,
   error: null,
   loading: false,
+  imageFileUploadProgress:null,
+  imageFileUrl:null
 };
 
 
@@ -72,10 +75,45 @@ return data;
    }
 })
 
+export const uploadImageThunk = createAsyncThunk('user/updateProfileImage', async (args, thunkAPI) => {
+  const storage = getStorage(app);
+  const fileName = new Date().getTime() + args.imageFile.name;
+  const storageRef = ref(storage, fileName);
+  const uploadTask = uploadBytesResumable(storageRef, args.imageFile);
+
+  return new Promise((resolve, reject) => {
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        thunkAPI.dispatch(setImageUploadProgress(progress.toFixed(0)));
+      },
+      (error) => {
+       return reject(thunkAPI.rejectWithValue(error.message));
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+          thunkAPI.dispatch(setImageFileUrl(downloadUrl));
+          resolve(downloadUrl);
+        }).catch((error) => {
+        return reject(thunkAPI.rejectWithValue(error.message));
+        });
+      }
+    );
+  });
+});
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
-  reducers: {},
+  reducers: {
+    setImageUploadProgress:(state,action)=>{
+      state.imageFileUploadProgress=action.payload;
+    },
+    setImageFileUrl:(state,action)=>{
+      state.imageFileUrl=action.payload;
+    }
+  },
   extraReducers: (builder) => {
     builder  
     .addCase(signupThunk.pending, (state) => {
@@ -112,9 +150,22 @@ export const userSlice = createSlice({
       .addCase(signinWithGoogleThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      }).addCase(uploadImageThunk.pending, (state) => {
+        // state.loading = true;
+        state.error = null;  // Clear previous errors
+      })
+      .addCase(uploadImageThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        // state.currentUser = action.payload;
+      })
+      .addCase(uploadImageThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = "Could not upload image(File must be less than 2MB)";
       })
   },
 });
 
 export const userReducer = userSlice.reducer;
 export const userSelector = (state) => state.userReducer;
+export const { setImageUploadProgress, setImageFileUrl } = userSlice.actions;
