@@ -6,9 +6,10 @@ import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/st
 const initialState = {
   currentUser: null,
   error: null,
+  message:null,
   loading: false,
   imageFileUploadProgress:null,
-  imageFileUrl:null
+  imageFileUrl:null,
 };
 
 
@@ -103,6 +104,29 @@ export const uploadImageThunk = createAsyncThunk('user/updateProfileImage', asyn
   });
 });
 
+
+export const updateUserThunk=createAsyncThunk('user/updateUserProfile',async(args,thunkAPI)=>{
+  const state = thunkAPI.getState();
+  const { currentUser } = state.userReducer;
+  console.log(currentUser,args.formData);
+  try{
+const resp=await fetch(`/api/user/update/${currentUser._id}`,{
+  method:'PUT',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(args.formData)
+})
+const data=await resp.json();
+
+if(!resp.ok){
+thunkAPI.rejectWithValue(data.message);
+}
+return data;
+  }catch(error){
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -112,6 +136,9 @@ export const userSlice = createSlice({
     },
     setImageFileUrl:(state,action)=>{
       state.imageFileUrl=action.payload;
+    },
+    setFormData:(state,action)=>{
+      state.formData=action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -157,15 +184,27 @@ export const userSlice = createSlice({
       .addCase(uploadImageThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        // state.currentUser = action.payload;
       })
       .addCase(uploadImageThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = "Could not upload image(File must be less than 2MB)";
+      }).addCase(updateUserThunk.pending, (state) => {
+        state.loading = true;
+                state.error = null;  // Clear previous errors
+      })
+      .addCase(updateUserThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.currentUser =action.payload;
+        state.message="User's Profile updated successfully! "
+      })
+      .addCase(updateUserThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
   },
 });
 
 export const userReducer = userSlice.reducer;
 export const userSelector = (state) => state.userReducer;
-export const { setImageUploadProgress, setImageFileUrl } = userSlice.actions;
+export const { setFormData,setImageUploadProgress, setImageFileUrl } = userSlice.actions;
