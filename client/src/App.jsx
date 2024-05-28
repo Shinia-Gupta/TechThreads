@@ -27,9 +27,7 @@ function App() {
 
           <Route path="/projects" element={<Projects />} />
         </Routes>
-        <Footer />
-      </BrowserRouter>
-      <ToastContainer
+        <ToastContainer
           position="bottom-right"
           autoClose={3000}
           hideProgressBar={false}
@@ -42,6 +40,9 @@ function App() {
           theme="dark"
           transition={Slide}
           />   
+        <Footer />
+      </BrowserRouter>
+    
     </>
   );
 }

@@ -145,6 +145,25 @@ return data;
     thunkAPI.rejectWithValue(error.message);
   }
 })
+
+export const signoutUserThunk=createAsyncThunk('user/signout',async ()=>{
+ try{
+  const resp= await fetch('/api/user/signout',{
+    method:"POST"
+  })
+  const data=await resp.json();
+  if(!resp.ok){
+    thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  }catch(error){
+    thunkAPI.rejectWithValue(error.message);
+
+  }
+})
+
+
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -232,6 +251,23 @@ export const userSlice = createSlice({
       
       })
       .addCase(deleteUserThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })   .addCase(signoutUserThunk.pending, (state) => {
+        state.loading = true;
+                state.error = null;  
+      })
+      .addCase(signoutUserThunk.fulfilled, (state, action) => {
+        // console.log(action.payload);
+        state.loading = false;
+        state.error = null;
+        state.currentUser =null;
+      state.imageFileUrl=null,
+      state.imageFileUploadProgress=null,
+      state.message=null
+
+      })
+      .addCase(signoutUserThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
