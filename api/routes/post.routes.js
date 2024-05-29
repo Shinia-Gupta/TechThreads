@@ -1,5 +1,4 @@
 import express from 'express';
-import { signin, signinWithGoogle, signup } from '../controllers/auth.controller.js';
 import { verifyToken } from '../middlewares/verifyUser.middleware.js';
 import { createPost } from '../controllers/post.controller.js';
 

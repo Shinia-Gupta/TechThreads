@@ -8,7 +8,7 @@ import { Alert, Button, Modal, TextInput } from 'flowbite-react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import {HiOutlineExclamationCircle } from 'react-icons/hi'
-function DashProfile({isAdmin}) {
+function DashProfile() {
     const { currentUser, error, imageFileUploadProgress, imageFileUrl,loading } = useSelector(userSelector);
     const [imageFile, setImageFile] = useState(null);
     const [prevFile, setPrevFile] = useState(null);
