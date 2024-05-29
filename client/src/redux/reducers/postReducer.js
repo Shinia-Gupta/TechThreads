@@ -8,6 +8,7 @@ const initialState = {
   loading: false,
   imageFileUploadProgress:null,
   imageFileUrl:null,
+  posts:[]
 };
 
 
@@ -39,6 +40,23 @@ export const uploadPostImageThunk = createAsyncThunk('post/uploadPostImage', asy
   });
 });
 
+export const createPostThunk=createAsyncThunk('post/createpost',async (args,thunkAPI)=>{
+try {
+    const resp=await fetch('/api/post/create-post',{
+        method:"POST",
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(args.formData)
+    })
+    const data=await resp.json();
+    if(!resp.ok){
+       return thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+} catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+
+}
+})
 
 // export const updateUserThunk=createAsyncThunk('user/updateUserProfile',async(args,thunkAPI)=>{
 //   const state = thunkAPI.getState();
@@ -92,9 +110,7 @@ export const postSlice = createSlice({
     setImageFileUrl:(state,action)=>{
       state.imageFileUrl=action.payload;
     },
-    setFormData:(state,action)=>{
-      state.formData=action.payload;
-    }
+ 
   },
   extraReducers: (builder) => {
     builder  
@@ -110,6 +126,18 @@ export const postSlice = createSlice({
         state.loading = false;
         state.error = "Could not upload image(File must be less than 2MB)";
         // state.error=action.payload
+       }) .addCase(createPostThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;  // Clear previous errors
+      })
+      .addCase(createPostThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+  })
+      .addCase(createPostThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+
        })
     //.addCase(updateUserThunk.pending, (state) => {
     //     state.loading = true;
@@ -149,4 +177,4 @@ export const postSlice = createSlice({
 
 export const postReducer = postSlice.reducer;
 export const postSelector = (state) => state.postReducer;
-export const { setFormData,setImageUploadProgress, setImageFileUrl } = postSlice.actions;
+export const { setImageUploadProgress, setImageFileUrl } = postSlice.actions;

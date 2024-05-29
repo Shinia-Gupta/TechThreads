@@ -174,9 +174,7 @@ export const userSlice = createSlice({
     setImageFileUrl:(state,action)=>{
       state.imageFileUrl=action.payload;
     },
-    setFormData:(state,action)=>{
-      state.formData=action.payload;
-    }
+
   },
   extraReducers: (builder) => {
     builder  
@@ -276,4 +274,4 @@ export const userSlice = createSlice({
 
 export const userReducer = userSlice.reducer;
 export const userSelector = (state) => state.userReducer;
-export const { setFormData,setImageUploadProgress, setImageFileUrl } = userSlice.actions;
+export const { setImageUploadProgress, setImageFileUrl } = userSlice.actions;
