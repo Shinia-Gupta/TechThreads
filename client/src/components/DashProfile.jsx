@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {useNavigate} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteUserThunk, setImageFileUrl, setImageUploadProgress, signoutUserThunk, updateUserThunk, uploadImageThunk, userSelector } from '../redux/reducers/userReducer';
 import { toast } from 'react-toastify'
@@ -8,8 +8,8 @@ import { Alert, Button, Modal, TextInput } from 'flowbite-react';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import {HiOutlineExclamationCircle } from 'react-icons/hi'
-function DashProfile() {
-    const { currentUser, error, imageFileUploadProgress, imageFileUrl } = useSelector(userSelector);
+function DashProfile({isAdmin}) {
+    const { currentUser, error, imageFileUploadProgress, imageFileUrl,loading } = useSelector(userSelector);
     const [imageFile, setImageFile] = useState(null);
     const [prevFile, setPrevFile] = useState(null);
     const [noChange, setNoChange] = useState(null);
@@ -21,6 +21,8 @@ function DashProfile() {
     const filePickerRef = useRef();
     const dispatch = useDispatch();
 const navigate=useNavigate();
+
+
     useEffect(() => {
         if (imageFile) {
             uploadImage();
@@ -114,7 +116,12 @@ const navigate=useNavigate();
                 <TextInput type='text' id='username' placeholder='Username' defaultValue={currentUser.username} onChange={handleChange} />
                 <TextInput type='email' id='email' placeholder='Email' defaultValue={currentUser.email} onChange={handleChange} />
                 <TextInput type='password' id='password' placeholder='Password' onChange={handleChange} />
-                <Button type='submit' gradientDuoTone={'purpleToBlue'} outline disabled={imageUpdating}>Update</Button>
+                <Button type='submit' gradientDuoTone={'purpleToBlue'} outline disabled={imageUpdating||loading}>{loading?"Loading...":"Update"}</Button>
+                {currentUser?.isAdmin && (
+                  <Link to={'/create-post'}>
+                    <Button type='button' gradientDuoTone={'purpleToPink'} outline className='w-full'>Create a Post</Button>
+                  </Link>
+                )}
             </form>
             <div className='text-red-500 flex justify-between mt-5'>
                 <span className='cursor-pointer' onClick={()=>setShowModal(true)}>Delete Account</span>

@@ -11,6 +11,7 @@ import Projects from "./pages/Projects";
 import Header from "./components/Header";
 import Footer from "./components/FooterComp";
 import PrivateRoute from "./components/PrivateRoute";
+import CreatePost from "./pages/CreatePost";
 function App() {
   return (
     <>
@@ -21,9 +22,13 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
-          <Route element={<PrivateRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+          <Route element={<PrivateRoute isAdmin={false}/>}>
+            <Route path="/dashboard" element={<Dashboard isAdmin={false} />} />
           </Route>
+          <Route element={<PrivateRoute isAdmin={true}/>}>
+            <Route path="/create-post" element={<CreatePost />} />
+          </Route>
+
 
           <Route path="/projects" element={<Projects />} />
         </Routes>

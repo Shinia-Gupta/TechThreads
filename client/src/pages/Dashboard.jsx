@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import DashSidebar from "../components/DashSidebar";
 import DashProfile from "../components/DashProfile";
 
-function Dashboard() {
+function Dashboard({isAdmin}) {
   const location = useLocation();
   const [tab, setTab] = useState("");
 
@@ -23,7 +23,7 @@ function Dashboard() {
         <DashSidebar />
       </div>
         {/* Profile  */}
-        {tab === "profile" && <DashProfile />}
+        {tab === "profile" && <DashProfile isAdmin={isAdmin}/>}
     </div>
   );
 }
