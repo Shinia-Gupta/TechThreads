@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { app } from '../../config/firebaseInit.js';
 import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage';
-
+import {userSelector} from './userReducer.js'
 const initialState = {
   error: null,
   message:null,
   loading: false,
   imageFileUploadProgress:null,
   imageFileUrl:null,
-  posts:[]
+  userPosts:[]
 };
 
 
@@ -57,6 +57,25 @@ try {
 
 }
 })
+
+export const getPostsThunk=createAsyncThunk('post/getPost',async (args,thunkAPI)=>{
+  try {
+    const state = thunkAPI.getState();
+    const userState =userSelector(state);
+    const {currentUser}=userState;
+      const resp=await fetch(`/api/post/get-posts?userId=${currentUser._id}`,{
+          method:"GET"
+      })
+      const data=await resp.json();
+      if(!resp.ok){
+         return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+  } catch (error) {
+      thunkAPI.rejectWithValue(error.message);
+  
+  }
+  })
 
 // export const updateUserThunk=createAsyncThunk('user/updateUserProfile',async(args,thunkAPI)=>{
 //   const state = thunkAPI.getState();
@@ -135,6 +154,20 @@ export const postSlice = createSlice({
         state.error = null;
   })
       .addCase(createPostThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+
+       })
+       .addCase(getPostsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;  // Clear previous errors
+      })
+      .addCase(getPostsThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.userPosts=action.payload.posts;
+  })
+      .addCase(getPostsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
 

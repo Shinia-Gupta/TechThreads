@@ -6,7 +6,7 @@ const router = express.Router();
 
 
 router.post('/create-post',verifyToken,createPost);
-router.get('/getPosts',getPosts);
+router.get('/get-posts',getPosts);
 // router.post('/google',signinWithGoogle);
 
 export default router;
