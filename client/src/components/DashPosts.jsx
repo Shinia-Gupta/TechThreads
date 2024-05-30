@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getPostsThunk, postSelector } from "../redux/reducers/postReducer";
+import { getMorePostsThunk, getPostsThunk, postSelector } from "../redux/reducers/postReducer";
 import { userSelector } from "../redux/reducers/userReducer";
 import { Table } from "flowbite-react";
 import { Link } from "react-router-dom";
@@ -8,6 +8,7 @@ function DashPosts() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector(userSelector);
   const { userPosts } = useSelector(postSelector);
+  const [showMore,setShowMore]=useState(true);
 
   useEffect(() => {
     if (currentUser.isAdmin) {
@@ -17,6 +18,16 @@ function DashPosts() {
 
   async function fetchPosts() {
     await dispatch(getPostsThunk());
+  }
+
+  const handleShowMore=async ()=>{
+    const startIndex=userPosts.length;
+    const resultAction=await dispatch(getMorePostsThunk(startIndex))
+    if(getMorePostsThunk.fulfilled.match(resultAction)){
+      if(resultAction.payload.posts.length<9){
+        setShowMore(false)
+      }
+    }
   }
 
   return (
@@ -75,6 +86,11 @@ function DashPosts() {
               </Table.Body>
             ))}
           </Table>
+          {showMore && (
+            <button onClick={handleShowMore} className="w-full text-teal-500 self-center text-sm py-7">
+              Show More
+            </button>
+          )}
         </>
       ) : (
         <p>You have no posts yet!</p>

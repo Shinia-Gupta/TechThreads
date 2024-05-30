@@ -77,6 +77,25 @@ export const getPostsThunk=createAsyncThunk('post/getPost',async (args,thunkAPI)
   }
   })
 
+  export const getMorePostsThunk=createAsyncThunk('post/getMorePost',async (args,thunkAPI)=>{
+    try {
+      const state = thunkAPI.getState();
+      const userState =userSelector(state);
+      const {currentUser}=userState;
+        const resp=await fetch(`/api/post/get-posts?userId=${currentUser._id}&startIndex=${args}`,{
+            method:"GET"
+        })
+        const data=await resp.json();
+        if(!resp.ok){
+           return thunkAPI.rejectWithValue(data.message);
+        }
+        return data;
+    } catch (error) {
+        thunkAPI.rejectWithValue(error.message);
+    
+    }
+    })
+
 // export const updateUserThunk=createAsyncThunk('user/updateUserProfile',async(args,thunkAPI)=>{
 //   const state = thunkAPI.getState();
 //   const { currentUser } = state.postReducer;
@@ -145,7 +164,8 @@ export const postSlice = createSlice({
         state.loading = false;
         state.error = "Could not upload image(File must be less than 2MB)";
         // state.error=action.payload
-       }) .addCase(createPostThunk.pending, (state) => {
+       })
+        .addCase(createPostThunk.pending, (state) => {
         state.loading = true;
         state.error = null;  // Clear previous errors
       })
@@ -166,8 +186,25 @@ export const postSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.userPosts=action.payload.posts;
+        state.showMore=action.payload.posts.length<9?false:true;
   })
       .addCase(getPostsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+
+       })
+       .addCase(getMorePostsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;  // Clear previous errors
+      })
+      .addCase(getMorePostsThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.userPosts=[...state.userPosts,...action.payload.posts];
+        // state.showMore=action.payload.posts.length<9?false:true;
+        // console.log(state.userPosts,state.showMore);
+  })
+      .addCase(getMorePostsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
 
