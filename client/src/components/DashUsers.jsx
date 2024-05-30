@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-// import { getUsersThunk } from "../redux/reducers/userReducer";
-import { userSelector } from "../redux/reducers/userReducer";
+import { userSelector,getUsersThunk,getMoreUsersThunk, deleteUserThunk, deleteUserByAdminThunk } from "../redux/reducers/userReducer";
 
 import { Button, Modal, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import {FaCheck,FaTimes} from 'react-icons/fa'
-import { dashuserSelector,getUsersThunk,getMoreUsersThunk } from "../redux/reducers/dashUserReducer";
+// import { dashuserSelector, } from "../redux/reducers/dashUserReducer";
 function DashUsers() {
   const dispatch = useDispatch();
-  const { currentUser } = useSelector(userSelector);
-  const {allUsers}=useSelector(dashuserSelector)
+  const { currentUser,allUsers } = useSelector(userSelector);
   const [showMore,setShowMore]=useState(true);
   const [showDeleteModal,setShowDeleteModal]=useState(false);
   const [currentUserToDelete,setCurrentUserToDelete]=useState(null);
@@ -20,7 +18,7 @@ function DashUsers() {
   async function fetchUsers() {
     const startIndex=allUsers.length;
 
-    const resultAction=await dispatch(getUsersThunk(startIndex));
+    await dispatch(getUsersThunk(startIndex));
   }
 
   useEffect(() => {
@@ -40,10 +38,11 @@ function DashUsers() {
     }
   }
 
-const handleDeletePost=async()=>{
-//   const resultAction=await dispatch(deletePostThunk(currentUserToDelete));
-//   console.log(resultAction);
-//   setShowDeleteModal(false)
+const handleDeleteUserByAdmin=async()=>{
+  const resultAction=await dispatch(deleteUserByAdminThunk(currentUserToDelete));
+  if(deleteUserByAdminThunk.fulfilled.match(resultAction)){
+setShowDeleteModal(false);
+  }
 }
 
   return (
@@ -66,7 +65,7 @@ const handleDeletePost=async()=>{
                     {new Date(user.createdAt).toLocaleDateString()}
                   </Table.Cell>
                   <Table.Cell>
-                    {/* <Link to={`/user/${user.slug}`}> */}
+                   
                       {
                         <img
                           src={user.profilePicture}
@@ -74,15 +73,12 @@ const handleDeletePost=async()=>{
                           className="w-10 h-10 object-cover bg-gray-500 rounded-full"
                         />
                       }
-                    {/* </Link> */}
+                   
                   </Table.Cell>
                   <Table.Cell>
-                    {/* <Link
-                      to={`/user/${user.slug}`}
-                      className="font-medium text-gray-900 dark:text-white"
-                    > */}
+                   
                       {user.username}
-                    {/* </Link> */}
+               
                   </Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
                   <Table.Cell>{user.isAdmin?<FaCheck className='text-green-500'/>:<FaTimes className='text-red-500'/>}</Table.Cell>
@@ -117,10 +113,10 @@ const handleDeletePost=async()=>{
           <div className='text-center'>
             <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
             <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
-              Are you sure you want to delete this post?
+              Are you sure you want to delete this user?
             </h3>
             <div className='flex justify-center gap-4'>
-              <Button color='failure' onClick={handleDeletePost}>
+              <Button color='failure' onClick={handleDeleteUserByAdmin}>
                 Yes, I'm sure
               </Button>
               <Button color='gray' onClick={() => setShowDeleteModal(false)}>

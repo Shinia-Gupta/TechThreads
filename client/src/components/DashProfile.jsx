@@ -77,7 +77,7 @@ const navigate=useNavigate();
 
     const handleDeleteUser = async () => {
         setShowModal(false);
-      const resultAction= dispatch(deleteUserThunk());
+      const resultAction= dispatch(deleteUserThunk(currentUser._id));
       if(deleteUserThunk.fulfilled.match(resultAction)){
         navigate('/signin')
         toast.success(resultAction.payload)

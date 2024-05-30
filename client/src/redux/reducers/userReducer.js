@@ -10,7 +10,7 @@ const initialState = {
   loading: false,
   imageFileUploadProgress:null,
   imageFileUrl:null,
-
+allUsers:[]
 };
 
 
@@ -128,11 +128,11 @@ return data;
 })
 
 export const deleteUserThunk=createAsyncThunk('user/deleteUser',async(args,thunkAPI)=>{
-  const state = thunkAPI.getState();
-  const { currentUser } = state.userReducer;
-  console.log(currentUser);
+  // const state = thunkAPI.getState();
+  // const { currentUser } = state.userReducer;
+  // console.log(currentUser);
   try{
-const resp=await fetch(`/api/user/delete/${currentUser._id}`,{
+const resp=await fetch(`/api/user/delete/${args}`,{
   method:'DELETE',
   headers:{'Content-Type':'application/json'}
 })
@@ -141,7 +141,25 @@ const data=await resp.json();
 if(!resp.ok){
 thunkAPI.rejectWithValue(data.message);
 }
-return data;
+return args;
+  }catch(error){
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
+export const deleteUserByAdminThunk=createAsyncThunk('user/deleteUserByAdmin',async(args,thunkAPI)=>{
+
+  try{
+const resp=await fetch(`/api/user/delete/${args}`,{
+  method:'DELETE',
+  headers:{'Content-Type':'application/json'}
+})
+const data=await resp.json();
+
+if(!resp.ok){
+thunkAPI.rejectWithValue(data.message);
+}
+return args;
   }catch(error){
     thunkAPI.rejectWithValue(error.message);
   }
@@ -163,47 +181,44 @@ export const signoutUserThunk=createAsyncThunk('user/signout',async ()=>{
   }
 })
 
-// export const getUsersThunk=createAsyncThunk('user/getUsers',async (args,thunkAPI)=>{
-//   try {
-//     console.log('thunk called to get users');
-//     const state = thunkAPI.getState();
-//     const userState =userSelector(state);
-//     const {currentUser}=userState;
-//       const resp=await fetch(`/api/user/getusers`,{
-//           method:"GET"
-//       })
-//       console.log(resp);
-//       const data=await resp.json();
-//       if(!resp.ok){
-//          return thunkAPI.rejectWithValue(data.message);
-//       }
-//       console.log(resp,data);
-//       return data;
-//   } catch (error) {
-//       thunkAPI.rejectWithValue(error.message);
+export const getUsersThunk=createAsyncThunk('user/getUsers',async (args,thunkAPI)=>{
+  try {
+    const state = thunkAPI.getState();
+    const userState =userSelector(state);
+    const {currentUser}=userState;
+      const resp=await fetch(`/api/user/getusers`,{
+          method:"GET"
+      })
+      const data=await resp.json();
+      if(!resp.ok){
+         return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+  } catch (error) {
+      thunkAPI.rejectWithValue(error.message);
   
-//   }
-//   })
+  }
+  })
 
 
-//   export const getMoreUsersThunk=createAsyncThunk('user/getMoreUsers',async (args,thunkAPI)=>{
-//     try {
-//       const state = thunkAPI.getState();
-//       const userState =userSelector(state);
-//       const {currentUser}=userState;
-//         const resp=await fetch(`/api/post/get-posts?userId=${currentUser._id}&startIndex=${args}`,{
-//             method:"GET"
-//         })
-//         const data=await resp.json();
-//         if(!resp.ok){
-//            return thunkAPI.rejectWithValue(data.message);
-//         }
-//         return data;
-//     } catch (error) {
-//         thunkAPI.rejectWithValue(error.message);
+  export const getMoreUsersThunk=createAsyncThunk('user/getMoreUsers',async (args,thunkAPI)=>{
+    try {
+      const state = thunkAPI.getState();
+      const userState =userSelector(state);
+      const {currentUser}=userState;
+        const resp=await fetch(`/api/user/getusers?userId=${currentUser._id}&startIndex=${args}`,{
+            method:"GET"
+        })
+        const data=await resp.json();
+        if(!resp.ok){
+           return thunkAPI.rejectWithValue(data.message);
+        }
+        return data;
+    } catch (error) {
+        thunkAPI.rejectWithValue(error.message);
     
-//     }
-//     })
+    }
+    })
 
 export const userSlice = createSlice({
   name: 'user',
@@ -287,7 +302,7 @@ export const userSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.currentUser =null;
-      
+      state.allUsers=state.allUsers.filter((user)=>user._id!==action.payload);
       })
       .addCase(deleteUserThunk.rejected, (state, action) => {
         state.loading = false;
@@ -311,37 +326,46 @@ export const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-//       .addCase(getUsersThunk.pending, (state) => {
-//         state.loading = true;
-//                 state.error = null;  
-//                 console.log('pending');
-//       })
-//       .addCase(getUsersThunk.fulfilled, (state, action) => {
-//         console.log(action.payload);
-//         state.loading = false;
-//         state.error = null;
-// state.allUsers=[...action.payload];
-// console.log(state.allUsers);
-//       })
-//       .addCase(getUsersThunk.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//         console.log('rejected');
+      .addCase(getUsersThunk.pending, (state) => {
+        state.loading = true;
+                state.error = null;  
+      })
+      .addCase(getUsersThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+state.allUsers=action.payload.users;
+      })
+      .addCase(getUsersThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
 
-//       }) .addCase(getMoreUsersThunk.pending, (state) => {
-//         state.loading = true;
-//         state.error = null; 
-//       })
-//       .addCase(getMoreUsersThunk.fulfilled, (state, action) => {
-//         state.loading = false;
-//         state.error = null;
-//         state.allUsers=[...state.allUsers,...action.payload.posts];
-//         })
-//       .addCase(getMoreUsersThunk.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
+      }) .addCase(getMoreUsersThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null; 
+      })
+      .addCase(getMoreUsersThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.allUsers=[...state.allUsers,...action.payload.users];
+        })
+      .addCase(getMoreUsersThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
 
-//        })
+       }) .addCase(deleteUserByAdminThunk.pending, (state) => {
+        state.loading = true;
+                state.error = null;  
+      })
+      .addCase(deleteUserByAdminThunk.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.loading = false;
+        state.error = null;
+      state.allUsers=state.allUsers.filter((user)=>user._id!==action.payload);
+      })
+      .addCase(deleteUserByAdminThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      }) 
       
   },
 });
