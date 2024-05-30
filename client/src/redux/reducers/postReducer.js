@@ -77,6 +77,23 @@ export const getPostsThunk=createAsyncThunk('post/getPost',async (args,thunkAPI)
   }
   })
 
+  export const getAPostThunk=createAsyncThunk('post/getPostById',async (args,thunkAPI)=>{
+    try {
+      
+        const resp=await fetch(`/api/post/get-posts?postId=${args}`,{
+            method:"GET"
+        })
+        const data=await resp.json();
+        if(!resp.ok){
+           return thunkAPI.rejectWithValue(data.message);
+        }
+        return data;
+    } catch (error) {
+        thunkAPI.rejectWithValue(error.message);
+    
+    }
+    })
+
   export const getMorePostsThunk=createAsyncThunk('post/getMorePost',async (args,thunkAPI)=>{
     try {
       const state = thunkAPI.getState();
@@ -96,26 +113,26 @@ export const getPostsThunk=createAsyncThunk('post/getPost',async (args,thunkAPI)
     }
     })
 
-// export const updateUserThunk=createAsyncThunk('user/updateUserProfile',async(args,thunkAPI)=>{
-//   const state = thunkAPI.getState();
-//   const { currentUser } = state.postReducer;
-//   // console.log(currentUser,args.formData);
-//   try{
-// const resp=await fetch(`/api/user/update/${currentUser._id}`,{
-//   method:'PUT',
-//   headers:{'Content-Type':'application/json'},
-//   body:JSON.stringify(args.formData)
-// })
-// const data=await resp.json();
+export const updatePostThunk=createAsyncThunk('post/updatePost',async(args,thunkAPI)=>{
+  const state = thunkAPI.getState();
+  const userState =userSelector(state);
+  const {currentUser}=userState;
+  try{
+const resp=await fetch(`/api/post/update-post/${args.formData._id}/${currentUser._id}`,{
+  method:'PUT',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(args.formData)
+})
+const data=await resp.json();
 
-// if(!resp.ok){
-// thunkAPI.rejectWithValue(data.message);
-// }
-// return data;
-//   }catch(error){
-//     thunkAPI.rejectWithValue(error.message);
-//   }
-// })
+if(!resp.ok){
+thunkAPI.rejectWithValue(data.message);
+}
+return data;
+  }catch(error){
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
 
 export const deletePostThunk=createAsyncThunk('post/deletePost',async(args,thunkAPI)=>{
   const state = thunkAPI.getState();
@@ -179,7 +196,7 @@ export const postSlice = createSlice({
        })
        .addCase(getPostsThunk.pending, (state) => {
         state.loading = true;
-        state.error = null;  // Clear previous errors
+        state.error = null; 
       })
       .addCase(getPostsThunk.fulfilled, (state, action) => {
         state.loading = false;
@@ -194,7 +211,7 @@ export const postSlice = createSlice({
        })
        .addCase(getMorePostsThunk.pending, (state) => {
         state.loading = true;
-        state.error = null;  // Clear previous errors
+        state.error = null; 
       })
       .addCase(getMorePostsThunk.fulfilled, (state, action) => {
         state.loading = false;
@@ -206,21 +223,7 @@ export const postSlice = createSlice({
         state.error = action.payload;
 
        })
-    //.addCase(updateUserThunk.pending, (state) => {
-    //     state.loading = true;
-    //             state.error = null;  // Clear previous errors
-    //   })
-    //   .addCase(updateUserThunk.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     state.error = null;
-    //     state.currentUser =action.payload;
-    //     state.message="User's Profile updated successfully! "
-    //   })
-    //   .addCase(updateUserThunk.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload;
-    //   })
-      .addCase(deletePostThunk.pending, (state) => {
+         .addCase(deletePostThunk.pending, (state) => {
         state.loading = true;
                 state.error = null;  
       })
@@ -234,7 +237,23 @@ state.userPosts=state.userPosts.filter((post)=>post._id!=action.payload);
       .addCase(deletePostThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })   
+      })
+       .addCase(updatePostThunk.pending, (state) => {
+            state.loading = true;
+                    state.error = null;  
+          })
+          .addCase(updatePostThunk.fulfilled, (state, action) => {
+            console.log(action.payload);
+            state.loading = false;
+            state.error = null;
+            state.userPosts = state.userPosts.map(post => 
+              post._id === action.payload._id ? action.payload : post
+            );
+          })
+          .addCase(updatePostThunk.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+          })  
    
   },
 });
