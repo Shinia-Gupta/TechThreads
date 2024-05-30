@@ -117,25 +117,24 @@ export const getPostsThunk=createAsyncThunk('post/getPost',async (args,thunkAPI)
 //   }
 // })
 
-// export const deleteUserThunk=createAsyncThunk('user/deleteUser',async(args,thunkAPI)=>{
-//   const state = thunkAPI.getState();
-//   const { currentUser } = state.userReducer;
-//   console.log(currentUser);
-//   try{
-// const resp=await fetch(`/api/user/delete/${currentUser._id}`,{
-//   method:'DELETE',
-//   headers:{'Content-Type':'application/json'}
-// })
-// const data=await resp.json();
+export const deletePostThunk=createAsyncThunk('post/deletePost',async(args,thunkAPI)=>{
+  const state = thunkAPI.getState();
+  const { currentUser } = state.userReducer;
+  console.log(currentUser._id,args);
+  try{
+const resp=await fetch(`/api/post/delete-post/${args}/${currentUser._id}`,{
+  method:'DELETE'
+})
+const data=await resp.json();
 
-// if(!resp.ok){
-// thunkAPI.rejectWithValue(data.message);
-// }
-// return data;
-//   }catch(error){
-//     thunkAPI.rejectWithValue(error.message);
-//   }
-// })
+if(!resp.ok){
+thunkAPI.rejectWithValue(data.message);
+}
+return args;
+  }catch(error){
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
 
 
 export const postSlice = createSlice({
@@ -201,9 +200,7 @@ export const postSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.userPosts=[...state.userPosts,...action.payload.posts];
-        // state.showMore=action.payload.posts.length<9?false:true;
-        // console.log(state.userPosts,state.showMore);
-  })
+        })
       .addCase(getMorePostsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
@@ -223,24 +220,21 @@ export const postSlice = createSlice({
     //     state.loading = false;
     //     state.error = action.payload;
     //   })
-    //   .addCase(deleteUserThunk.pending, (state) => {
-    //     state.loading = true;
-    //             state.error = null;  
-    //   })
-    //   .addCase(deleteUserThunk.fulfilled, (state, action) => {
-    //     console.log(action.payload);
-    //     state.loading = false;
-    //     state.error = null;
-    //     state.currentUser =null;
+      .addCase(deletePostThunk.pending, (state) => {
+        state.loading = true;
+                state.error = null;  
+      })
+      .addCase(deletePostThunk.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.loading = false;
+        state.error = null;
+state.userPosts=state.userPosts.filter((post)=>post._id!=action.payload);
       
-    //   })
-    //   .addCase(deleteUserThunk.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload;
-    //   })   .addCase(signoutUserThunk.pending, (state) => {
-    //     state.loading = true;
-    //             state.error = null;  
-    //   })
+      })
+      .addCase(deletePostThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })   
    
   },
 });
