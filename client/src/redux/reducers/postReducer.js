@@ -77,22 +77,6 @@ export const getPostsThunk=createAsyncThunk('post/getPost',async (args,thunkAPI)
   }
   })
 
-  export const getAPostThunk=createAsyncThunk('post/getPostById',async (args,thunkAPI)=>{
-    try {
-      
-        const resp=await fetch(`/api/post/get-posts?postId=${args}`,{
-            method:"GET"
-        })
-        const data=await resp.json();
-        if(!resp.ok){
-           return thunkAPI.rejectWithValue(data.message);
-        }
-        return data;
-    } catch (error) {
-        thunkAPI.rejectWithValue(error.message);
-    
-    }
-    })
 
   export const getMorePostsThunk=createAsyncThunk('post/getMorePost',async (args,thunkAPI)=>{
     try {
@@ -112,6 +96,25 @@ export const getPostsThunk=createAsyncThunk('post/getPost',async (args,thunkAPI)
     
     }
     })
+    
+  export const getAPostThunk=createAsyncThunk('post/getPostById',async (args,thunkAPI)=>{
+    try {
+      
+        const resp=await fetch(`/api/post/get-posts?postId=${args}`,{
+            method:"GET"
+        })
+        const data=await resp.json();
+        if(!resp.ok){
+           return thunkAPI.rejectWithValue(data.message);
+        }
+        return data;
+    } catch (error) {
+        thunkAPI.rejectWithValue(error.message);
+    
+    }
+    })
+
+
 
 export const updatePostThunk=createAsyncThunk('post/updatePost',async(args,thunkAPI)=>{
   const state = thunkAPI.getState();

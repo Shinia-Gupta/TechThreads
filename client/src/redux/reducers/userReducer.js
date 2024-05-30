@@ -10,6 +10,7 @@ const initialState = {
   loading: false,
   imageFileUploadProgress:null,
   imageFileUrl:null,
+
 };
 
 
@@ -162,7 +163,47 @@ export const signoutUserThunk=createAsyncThunk('user/signout',async ()=>{
   }
 })
 
+// export const getUsersThunk=createAsyncThunk('user/getUsers',async (args,thunkAPI)=>{
+//   try {
+//     console.log('thunk called to get users');
+//     const state = thunkAPI.getState();
+//     const userState =userSelector(state);
+//     const {currentUser}=userState;
+//       const resp=await fetch(`/api/user/getusers`,{
+//           method:"GET"
+//       })
+//       console.log(resp);
+//       const data=await resp.json();
+//       if(!resp.ok){
+//          return thunkAPI.rejectWithValue(data.message);
+//       }
+//       console.log(resp,data);
+//       return data;
+//   } catch (error) {
+//       thunkAPI.rejectWithValue(error.message);
+  
+//   }
+//   })
 
+
+//   export const getMoreUsersThunk=createAsyncThunk('user/getMoreUsers',async (args,thunkAPI)=>{
+//     try {
+//       const state = thunkAPI.getState();
+//       const userState =userSelector(state);
+//       const {currentUser}=userState;
+//         const resp=await fetch(`/api/post/get-posts?userId=${currentUser._id}&startIndex=${args}`,{
+//             method:"GET"
+//         })
+//         const data=await resp.json();
+//         if(!resp.ok){
+//            return thunkAPI.rejectWithValue(data.message);
+//         }
+//         return data;
+//     } catch (error) {
+//         thunkAPI.rejectWithValue(error.message);
+    
+//     }
+//     })
 
 export const userSlice = createSlice({
   name: 'user',
@@ -251,7 +292,8 @@ export const userSlice = createSlice({
       .addCase(deleteUserThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })   .addCase(signoutUserThunk.pending, (state) => {
+      }) 
+        .addCase(signoutUserThunk.pending, (state) => {
         state.loading = true;
                 state.error = null;  
       })
@@ -269,6 +311,38 @@ export const userSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+//       .addCase(getUsersThunk.pending, (state) => {
+//         state.loading = true;
+//                 state.error = null;  
+//                 console.log('pending');
+//       })
+//       .addCase(getUsersThunk.fulfilled, (state, action) => {
+//         console.log(action.payload);
+//         state.loading = false;
+//         state.error = null;
+// state.allUsers=[...action.payload];
+// console.log(state.allUsers);
+//       })
+//       .addCase(getUsersThunk.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         console.log('rejected');
+
+//       }) .addCase(getMoreUsersThunk.pending, (state) => {
+//         state.loading = true;
+//         state.error = null; 
+//       })
+//       .addCase(getMoreUsersThunk.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.error = null;
+//         state.allUsers=[...state.allUsers,...action.payload.posts];
+//         })
+//       .addCase(getMoreUsersThunk.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+
+//        })
+      
   },
 });
 

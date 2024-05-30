@@ -76,6 +76,7 @@ export const signOut = (req, res, next) => {
 };
 
 export const getUsers=async (req,res,next)=>{
+  console.log(req.user);
   if(!req.user.isAdmin){
     return next(errorHandler(403,"You are not allowed to see all users! "));
 }
@@ -86,7 +87,6 @@ const limit=parseInt(req.query.limit)||9;
 const sortDirection=req.query.sort==='asc'?1:-1;
 
 const users=await User.find().sort({createdAt:sortDirection}).skip(startIndex).limit(limit).select('-password');
-console.log(users);
 const totalUsers=await User.countDocuments();
 const now=new Date();
 const lastMonthDate=new Date(
