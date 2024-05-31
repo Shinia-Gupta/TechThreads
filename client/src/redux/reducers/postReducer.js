@@ -14,6 +14,7 @@ const initialState = {
   imageFileUploadProgress: null,
   imageFileUrl: null,
   userPosts: [],
+  currentPostDetail:{}
 };
 
 export const uploadPostImageThunk = createAsyncThunk(
@@ -309,6 +310,7 @@ export const postSlice = createSlice({
       .addCase(getAPostBySlugThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
+        state.currentPostDetail=action.payload.posts[0];
       })
       .addCase(getAPostBySlugThunk.rejected, (state, action) => {
         state.loading = false;

@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAPostBySlugThunk, postSelector } from "../redux/reducers/postReducer";
 import {Button, Spinner} from 'flowbite-react'
 import CallToAction from "../components/CallToAction";
+import CommentSection from "../components/CommentSection";
 function PostDetailPage() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
@@ -54,8 +55,10 @@ if(loading)
         className="p-3 max-w-2xl mx-auto w-full post-content"
         dangerouslySetInnerHTML={{ __html: post && post.content }}
       ></div>
-      <div className="max-w-4xl mx-auto w-full"><CallToAction /></div>
-      {/* <CommentSection postId={post._id} /> */}
+      <div className="max-w-4xl mx-auto w-full"><CallToAction />
+      
+      <CommentSection post={post} />
+      </div>
 
       {/* <div className='flex flex-col justify-center items-center mb-5'>
           <h1 className='text-xl mt-5'>Recent articles</h1>
