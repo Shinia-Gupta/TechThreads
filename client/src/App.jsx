@@ -13,6 +13,7 @@ import Footer from "./components/FooterComp";
 import PrivateRoute from "./components/PrivateRoute";
 import CreatePost from "./pages/CreatePost";
 import UpdatePost from "./pages/UpdatePost";
+import PostDetailPage from "./pages/PostDetailPage";
 function App() {
   return (
     <>
@@ -33,6 +34,7 @@ function App() {
 
 
           <Route path="/projects" element={<Projects />} />
+          <Route path="/post/:slug" element={<PostDetailPage/>} />
         </Routes>
         <ToastContainer
           position="bottom-right"
