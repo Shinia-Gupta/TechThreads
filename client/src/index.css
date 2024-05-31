@@ -12,20 +12,26 @@ body{
 
 .post-content p{
     margin-bottom:0.5rem;
+    font-size: 1rem;
 
 }
 
 .post-content h1{
     font-size: 1.5rem;
     font-weight: 600;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family:  Verdana, Geneva, Tahoma, sans-serif;
     margin: 1.5rem 0;
 
 }
 
 .post-content h2{
     font-size: 1.4rem;
-    font-family: Georgia, 'Times New Roman', Times, serif;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.post-content h3{
+    font-size: 1.2rem;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .post-content a{
