@@ -100,6 +100,30 @@ try{
   }
 })
 
+export const deleteCommentThunk = createAsyncThunk(
+  "comment/deleteComment",
+  async (args, thunkAPI) => {
+    const state = thunkAPI.getState();
+    const { currentUser } = state.userReducer;
+    try {
+      const resp = await fetch(
+        `/api/comment/deleteComment/${args}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        thunkAPI.rejectWithValue(data.message);
+      }
+      return args;
+    } catch (error) {
+      thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 // export const getMorePostsThunk = createAsyncThunk(
 //   "post/getMorePost",
 //   async (args, thunkAPI) => {
@@ -211,6 +235,21 @@ export const commentSlice = createSlice({
         });
       })
       .addCase(updateCommentThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(deleteCommentThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(deleteCommentThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.comments = state.comments.filter(
+          (comment) => comment._id != action.payload
+        );
+      })
+      .addCase(deleteCommentThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserForCommentThunk, userSelector } from '../redux/reducers/userReducer';
-import {updateCommentThunk} from '../redux/reducers/commentReducer'
+import {deleteCommentThunk, updateCommentThunk} from '../redux/reducers/commentReducer'
 import moment from 'moment';
 import {FaThumbsUp} from 'react-icons/fa';
-import { Button, Textarea } from 'flowbite-react';
+import { Button, Modal, Textarea } from 'flowbite-react';
+import { HiOutlineExclamationCircle } from 'react-icons/hi';
 
 function Comment({comment,handleLike}) {
 const dispatch=useDispatch();
+const navigate=useNavigate();
 const {currentUser}=useSelector(userSelector);
 const [user,setUser]=useState([]);
 const [editing,setEditing]=useState(false);
 const [editedContent,setEditedContent]=useState(comment.content);
-console.log(editedContent);
+const [showDeleteModal,setShowDeleteModal]=useState(false);
 
 const getUserForComment=async ()=>{
     const resultAction=await dispatch(getUserForCommentThunk(comment.userId))
@@ -37,7 +39,14 @@ if(updateCommentThunk.fulfilled.match(resultAction)){
     setEditedContent(null);
 }
 }
-
+const handleDeleteComment=async()=>{
+  if(!currentUser){
+    navigate('/signin')
+    return;
+  }
+    const resultAction=await dispatch(deleteCommentThunk(comment._id));
+    setShowDeleteModal(false)
+  }
     return (
         <div  className='flex p-4 border-b dark:border-gray-600 text-sm'>
         <div className="flex-shrink-0 mr-3">
@@ -65,7 +74,7 @@ if(updateCommentThunk.fulfilled.match(resultAction)){
 <>
 <button type='button' className='hover:text-blue-500 hover:underline' onClick={handleEdit}>Edit</button> 
         <button type='button' className='hover:text-red-500
-        hover:underline'>Delete</button>
+        hover:underline' onClick={()=>setShowDeleteModal(true)}>Delete</button>
 </> 
     )}
 </div></>
@@ -74,7 +83,30 @@ if(updateCommentThunk.fulfilled.match(resultAction)){
 
         </div>
         
-        
+        <Modal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        popup
+        size='md'
+      >
+        <Modal.Header />
+        <Modal.Body>
+          <div className='text-center'>
+            <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
+            <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
+              Are you sure you want to delete this comment?
+            </h3>
+            <div className='flex justify-center gap-4'>
+              <Button color='failure' onClick={handleDeleteComment}>
+                Yes, I'm sure
+              </Button>
+              <Button color='gray' onClick={() => setShowDeleteModal(false)}>
+                No, cancel
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
         
         </div>
     )
