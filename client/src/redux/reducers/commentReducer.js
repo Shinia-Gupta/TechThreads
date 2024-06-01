@@ -55,6 +55,31 @@ export const getCommentsThunk = createAsyncThunk(
   }
 );
 
+export const toggleLikeThunk=createAsyncThunk('comment/likeComment',async(args,thunkAPI)=>{
+  try {
+const state=thunkAPI.getState();
+const userState=userSelector(state);
+const {currentUser}=userState;
+// console.log(currentUser);
+// if(!currentUser){
+//   thunkAPI.rejectWithValue('You are not authorized ')
+// }
+    const resp = await fetch(
+      `/api/comment/likeComment/${args}`,
+      {
+        method: "PUT",
+      }
+    );
+    const data = await resp.json();
+    if (!resp.ok) {
+      return thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
 // export const getMorePostsThunk = createAsyncThunk(
 //   "post/getMorePost",
 //   async (args, thunkAPI) => {
@@ -132,6 +157,28 @@ export const commentSlice = createSlice({
         // state.showMore = action.payload.posts.length < 9 ? false : true;
       })
       .addCase(getCommentsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        console.log(state.error);
+      })
+      .addCase(toggleLikeThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(toggleLikeThunk.fulfilled, (state, action) => {
+        console.log(action.payload,"...fulfilled");
+        state.loading = false;
+        state.error = null;
+        state.comments =state.comments.map((comment)=>{
+          if(comment._id===action.payload._id){
+            return action.payload
+          }
+          return comment;
+        });
+        console.log(state.comments);
+        // state.showMore = action.payload.posts.length < 9 ? false : true;
+      })
+      .addCase(toggleLikeThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         console.log(state.error);

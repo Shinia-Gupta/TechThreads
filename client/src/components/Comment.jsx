@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { getUserForCommentThunk } from '../redux/reducers/userReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserForCommentThunk, userSelector } from '../redux/reducers/userReducer';
 import moment from 'moment';
+import {FaThumbsUp} from 'react-icons/fa';
 
-
-function Comment({comment,key}) {
+function Comment({comment,key,handleLike}) {
 const dispatch=useDispatch();
 const [user,setUser]=useState([]);
+const {currentUser}=useSelector(userSelector);
 
 const getUserForComment=async ()=>{
     const resultAction=await dispatch(getUserForCommentThunk(comment.userId))
@@ -32,6 +33,10 @@ useEffect(()=>{
     <span className='text-xs text-gray-500'>{moment(comment.createdAt).fromNow()}</span>
 </div>
 <p className='text-gray-500 pb-2'>{comment.content}</p>
+<div className="flex gap-2 items-center pt-2 text-xs border-t dark:border-gray-700 max-w-fit ">
+    <button type='button' onClick={()=>handleLike(comment._id)} className={`text-gray-400 hover:text-blue-500 ${currentUser && comment.likes.includes(currentUser._id) && '!text-blue-500'} `}><FaThumbsUp className='text-sm '/></button>
+    <p>{comment.numberOfLikes>0 && comment.numberOfLikes+" "+(comment.numberOfLikes===1?"like":"likes")}</p>
+</div>
         </div>
         
         

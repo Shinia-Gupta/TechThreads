@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { userSelector } from '../redux/reducers/userReducer';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Alert, Button, Textarea } from 'flowbite-react';
 import sanitizeHtml from "sanitize-html";
-import { commentSelector, createCommentThunk, getCommentsThunk } from '../redux/reducers/commentReducer';
+import { commentSelector, createCommentThunk, getCommentsThunk, toggleLikeThunk } from '../redux/reducers/commentReducer';
 import Comment from './Comment';
 
 function CommentSection(props) {
     // console.log(props.post);
     const {post}=props;
     const {currentUser} =useSelector(userSelector);
-    const {comments}=useSelector(commentSelector);
+    const {comments,error}=useSelector(commentSelector);
     // const [getComments,setGetComments]=useState([]);
     const [comment,setComment]=useState('');
+    const [likes,setLikes]=useState(0);
+    const [numberOfLikes,setNumberOfLikes]=useState('');
     const [publishError,setPublishError]=useState(null)
 const dispatch=useDispatch();
+const navigate=useNavigate();
 
 
 useEffect(()=>{
@@ -47,6 +50,21 @@ if(createCommentThunk.rejected.match(resultAction)){
     setPublishError(resultAction.payload)
 }
     }
+
+    const handleLike=async(commentId)=>{
+const resultAction=await dispatch(toggleLikeThunk(commentId))
+if(toggleLikeThunk.fulfilled.match(resultAction)){
+  console.log(resultAction.payload,'...fulfilled');
+  setLikes([...likes,resultAction.payload.likes]);
+  setNumberOfLikes(resultAction.payload.likes.length)
+}
+
+if(toggleLikeThunk.rejected.match(resultAction)){
+  console.log(resultAction.payload,'...rejected');
+  navigate('/signin')
+}
+    }
+
     return (
         <div className='max-w-2xl mx-auto w-full p-3'>
             {currentUser?(
@@ -70,7 +88,7 @@ if(createCommentThunk.rejected.match(resultAction)){
                     <Button outline gradientDuoTone={'purpleToBlue'} type='Submit'>Submit</Button>
                     </div>
                {publishError && <Alert color={'failure'} className='mt-5'>
-{publishError}
+                {publishError}
                 </Alert>}
                 </form>
                 
@@ -89,7 +107,7 @@ if(createCommentThunk.rejected.match(resultAction)){
             <Comment
               key={comment._id}
               comment={comment}
-              
+              handleLike={handleLike}
             />
           ))}
         </>
