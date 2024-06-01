@@ -205,6 +205,25 @@ export const deletePostThunk = createAsyncThunk(
   }
 );
 
+export const fetchRecentPostsThunk=createAsyncThunk('post/fetchRecentposts',async(args,thunkAPI)=>{
+  try {
+    const resp = await fetch(
+      `/api/post/get-posts?limit=3`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
 export const postSlice = createSlice({
   name: "post",
   initialState,

@@ -6,6 +6,7 @@ import moment from 'moment';
 import {FaThumbsUp} from 'react-icons/fa';
 import { Button, Modal, Textarea } from 'flowbite-react';
 import { HiOutlineExclamationCircle } from 'react-icons/hi';
+import { useNavigate } from 'react-router-dom';
 
 function Comment({comment,handleLike}) {
 const dispatch=useDispatch();

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { getAPostBySlugThunk, postSelector } from "../redux/reducers/postReducer";
+import { fetchRecentPostsThunk, getAPostBySlugThunk, postSelector } from "../redux/reducers/postReducer";
 import {Button, Spinner} from 'flowbite-react'
 import CallToAction from "../components/CallToAction";
 import CommentSection from "../components/CommentSection";
+import PostCard from "../components/PostCard";
 function PostDetailPage() {
   const { slug } = useParams();
   const [post, setPost] = useState(null);
+  const [recentPosts, setRecentPosts] = useState(null);
   const dispatch = useDispatch();
 const {loading}=useSelector(postSelector);
 
@@ -17,6 +19,19 @@ async function getPostDetail() {
       setPost(resultAction.payload.posts[0]);
     }
   }
+
+useEffect(()=>{
+  fetchRecentPosts();
+},[])
+
+async function fetchRecentPosts(){
+const resultAction=await dispatch(fetchRecentPostsThunk());
+if(fetchRecentPostsThunk.fulfilled.match(resultAction)){
+  console.log(resultAction.payload);
+  setRecentPosts(resultAction.payload.posts);
+}
+}
+
 
   useEffect(() => {
     getPostDetail();
@@ -61,7 +76,13 @@ if(loading)
       
       {post && <CommentSection post={post} />}
       </div>
-
+      <div className='flex flex-col justify-center items-center mb-5'>
+        <h1 className='text-xl mt-5'>Recent Articles</h1>
+        <div className='flex flex-wrap gap-5 mt-5 justify-center'>
+          {recentPosts &&
+            recentPosts.map((post) => <PostCard key={post._id} post={post} />)}
+        </div>
+      </div>
     </main>
   );
 }
