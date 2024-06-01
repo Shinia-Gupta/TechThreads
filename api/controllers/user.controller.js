@@ -99,3 +99,13 @@ res.status(200).json({users,totalUsers,lastMonthUsers});
     next(error)
   }
 }
+
+export const getUserForComment=async(req,res,next)=>{
+  try {
+const user=await User.findById(req.params.userId).select('-password');
+console.log(req.params.userId,user);
+res.status(200).json(user);
+  } catch (error) {
+    next(error)
+  }
+}

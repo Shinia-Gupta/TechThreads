@@ -5,7 +5,7 @@ import storage from 'redux-persist/lib/storage';
 import persistStore from 'redux-persist/es/persistStore';
 import { themeReducer } from '../reducers/themeReducer';
 import { postReducer } from '../reducers/postReducer';
-import { commentReducer } from '../reducers/comment.reducer';
+import { commentReducer } from '../reducers/commentReducer';
 
 const rootReducer=combineReducers({
   userReducer,
@@ -17,7 +17,7 @@ const rootReducer=combineReducers({
 const persistConfig={
   key:"root",
   storage,
-  version:1
+ 
 }
 
 const persistedReducer=persistReducer(persistConfig,rootReducer)

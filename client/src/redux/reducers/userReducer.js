@@ -58,6 +58,8 @@ export const signinThunk = createAsyncThunk(
   }
 );
 
+
+
 export const signinWithGoogleThunk = createAsyncThunk(
   "user/googleOAuth",
   async (args, thunkAPI) => {
@@ -247,6 +249,26 @@ export const getMoreUsersThunk = createAsyncThunk(
     }
   }
 );
+
+
+export const getUserForCommentThunk=createAsyncThunk('user/getUserForComment',async(args,thunkAPI)=>{
+  try {
+    // const state = thunkAPI.getState();
+    // const userState = userSelector(state);
+    // const { currentUser } = userState;
+    const resp = await fetch(`/api/user/${args}`, {
+      method: "GET",
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      return thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
 
 export const userSlice = createSlice({
   name: "user",

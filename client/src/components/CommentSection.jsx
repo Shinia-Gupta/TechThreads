@@ -4,14 +4,23 @@ import { userSelector } from '../redux/reducers/userReducer';
 import { Link } from 'react-router-dom';
 import { Alert, Button, Textarea } from 'flowbite-react';
 import sanitizeHtml from "sanitize-html";
-import { createCommentThunk } from '../redux/reducers/comment.reducer';
+import { commentSelector, createCommentThunk, getCommentsThunk } from '../redux/reducers/commentReducer';
+import Comment from './Comment';
 
-function CommentSection({post}) {
+function CommentSection(props) {
+    // console.log(props.post);
+    const {post}=props;
     const {currentUser} =useSelector(userSelector);
+    const {comments}=useSelector(commentSelector);
+    // const [getComments,setGetComments]=useState([]);
     const [comment,setComment]=useState('');
     const [publishError,setPublishError]=useState(null)
 const dispatch=useDispatch();
 
+
+useEffect(()=>{
+dispatch(getCommentsThunk(post._id))
+},[post._id])
 
     const handleSubmit=async (e)=>{
         e.preventDefault();
@@ -27,7 +36,7 @@ const dispatch=useDispatch();
           return;
         }
 
-const resultAction=await dispatch(createCommentThunk({content:comment,postId:post._id}));
+const resultAction=await dispatch(createCommentThunk({content:comment.trim(),postId:post._id}));
 
 if(createCommentThunk.fulfilled.match(resultAction)){
     setComment('');
@@ -66,6 +75,25 @@ if(createCommentThunk.rejected.match(resultAction)){
                 </form>
                 
             )}
+              {comments.length === 0 ? (
+        <p className='text-sm my-5'>No comments yet!</p>
+      ) : (
+        <>
+          <div className='text-sm my-5 flex items-center gap-1'>
+            <p>Comments</p>
+            <div className='border border-gray-400 py-1 px-2 rounded-sm'>
+              <p>{comments.length}</p>
+            </div>
+          </div>
+          {comments.map((comment) => (
+            <Comment
+              key={comment._id}
+              comment={comment}
+              
+            />
+          ))}
+        </>
+      )}
         </div>
     )
 }

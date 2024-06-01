@@ -10,16 +10,18 @@ function PostDetailPage() {
   const [post, setPost] = useState(null);
   const dispatch = useDispatch();
 const {loading}=useSelector(postSelector);
-  useEffect(() => {
-    getPostDetail();
-  }, [slug]);
 
-  async function getPostDetail() {
+async function getPostDetail() {
     const resultAction = await dispatch(getAPostBySlugThunk(slug));
     if (getAPostBySlugThunk.fulfilled.match(resultAction)) {
       setPost(resultAction.payload.posts[0]);
     }
   }
+
+  useEffect(() => {
+    getPostDetail();
+  }, [slug]);
+  
 
 if(loading)
     return (
@@ -57,16 +59,9 @@ if(loading)
       ></div>
       <div className="max-w-4xl mx-auto w-full"><CallToAction />
       
-      <CommentSection post={post} />
+      {post && <CommentSection post={post} />}
       </div>
 
-      {/* <div className='flex flex-col justify-center items-center mb-5'>
-          <h1 className='text-xl mt-5'>Recent articles</h1>
-          <div className='flex flex-wrap gap-5 mt-5 justify-center'>
-            {recentPosts &&
-              recentPosts.map((post) => <PostCard key={post._id} post={post} />)}
-          </div>
-        </div> */}
     </main>
   );
 }
