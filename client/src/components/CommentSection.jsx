@@ -8,7 +8,6 @@ import { commentSelector, createCommentThunk, getCommentsThunk, toggleLikeThunk 
 import Comment from './Comment';
 
 function CommentSection(props) {
-    // console.log(props.post);
     const {post}=props;
     const {currentUser} =useSelector(userSelector);
     const {comments,error}=useSelector(commentSelector);
@@ -54,13 +53,11 @@ if(createCommentThunk.rejected.match(resultAction)){
     const handleLike=async(commentId)=>{
 const resultAction=await dispatch(toggleLikeThunk(commentId))
 if(toggleLikeThunk.fulfilled.match(resultAction)){
-  console.log(resultAction.payload,'...fulfilled');
   setLikes([...likes,resultAction.payload.likes]);
   setNumberOfLikes(resultAction.payload.likes.length)
 }
 
 if(toggleLikeThunk.rejected.match(resultAction)){
-  console.log(resultAction.payload,'...rejected');
   navigate('/signin')
 }
     }

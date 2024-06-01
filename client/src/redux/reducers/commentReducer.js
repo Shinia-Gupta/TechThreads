@@ -22,7 +22,6 @@ export const createCommentThunk = createAsyncThunk(
         body: JSON.stringify({content:args.content,postId:args.postId,userId:currentUser._id}),
       });
       const data = await resp.json();
-      console.log(data);
       if (!resp.ok) {
         return thunkAPI.rejectWithValue(data.message);
       }
@@ -60,7 +59,6 @@ export const toggleLikeThunk=createAsyncThunk('comment/likeComment',async(args,t
 const state=thunkAPI.getState();
 const userState=userSelector(state);
 const {currentUser}=userState;
-// console.log(currentUser);
 // if(!currentUser){
 //   thunkAPI.rejectWithValue('You are not authorized ')
 // }
@@ -68,6 +66,28 @@ const {currentUser}=userState;
       `/api/comment/likeComment/${args}`,
       {
         method: "PUT",
+      }
+    );
+    const data = await resp.json();
+    if (!resp.ok) {
+      return thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
+export const updateCommentThunk=createAsyncThunk('comment/updateComment',async(args,thunkAPI)=>{
+
+try{
+    const resp = await fetch(
+      `/api/comment/editComment/${args.comment._id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({content:args.editedContent}),
+   
       }
     );
     const data = await resp.json();
@@ -139,7 +159,6 @@ export const commentSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.comments=[...state.comments,action.payload];
-        // console.log(state.comments);
       })
       .addCase(createCommentThunk.rejected, (state, action) => {
         state.loading = false;
@@ -150,7 +169,6 @@ export const commentSlice = createSlice({
         state.error = null;
       })
       .addCase(getCommentsThunk.fulfilled, (state, action) => {
-        // console.log(action.payload,"...fulfilled");
         state.loading = false;
         state.error = null;
         state.comments =[... action.payload];
@@ -159,14 +177,12 @@ export const commentSlice = createSlice({
       .addCase(getCommentsThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.log(state.error);
       })
       .addCase(toggleLikeThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
       .addCase(toggleLikeThunk.fulfilled, (state, action) => {
-        console.log(action.payload,"...fulfilled");
         state.loading = false;
         state.error = null;
         state.comments =state.comments.map((comment)=>{
@@ -175,13 +191,28 @@ export const commentSlice = createSlice({
           }
           return comment;
         });
-        console.log(state.comments);
-        // state.showMore = action.payload.posts.length < 9 ? false : true;
       })
       .addCase(toggleLikeThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.log(state.error);
+      })
+      .addCase(updateCommentThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateCommentThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.comments =state.comments.map((comment)=>{
+          if(comment._id===action.payload._id){
+            return action.payload
+          }
+          return comment;
+        });
+      })
+      .addCase(updateCommentThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
     //   .addCase(getMorePostsThunk.pending, (state) => {
     //     state.loading = true;

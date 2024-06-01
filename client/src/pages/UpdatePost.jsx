@@ -54,7 +54,6 @@ function UpdatePost() {
       }, 5000);
     }
     if (uploadPostImageThunk.fulfilled.match(resultAction)) {
-      console.log(resultAction);
       setFormData({ ...formData, image: resultAction.payload });
       setTimeout(() => {
         dispatch(setImageUploadProgress(null));

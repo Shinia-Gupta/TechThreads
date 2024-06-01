@@ -186,7 +186,6 @@ export const deletePostThunk = createAsyncThunk(
   async (args, thunkAPI) => {
     const state = thunkAPI.getState();
     const { currentUser } = state.userReducer;
-    console.log(currentUser._id, args);
     try {
       const resp = await fetch(
         `/api/post/delete-post/${args}/${currentUser._id}`,
@@ -276,7 +275,6 @@ export const postSlice = createSlice({
         state.error = null;
       })
       .addCase(deletePostThunk.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.loading = false;
         state.error = null;
         state.userPosts = state.userPosts.filter(
@@ -292,7 +290,6 @@ export const postSlice = createSlice({
         state.error = null;
       })
       .addCase(updatePostThunk.fulfilled, (state, action) => {
-        console.log(action.payload);
         state.loading = false;
         state.error = null;
         state.userPosts = state.userPosts.map((post) =>

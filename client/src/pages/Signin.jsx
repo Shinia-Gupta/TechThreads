@@ -19,7 +19,6 @@ function Signin() {
     e.preventDefault();
     
       const resultAction = await dispatch(signinThunk(formData));
-      console.log(resultAction);
       if (signinThunk.fulfilled.match(resultAction)) {
         navigate('/');
       }

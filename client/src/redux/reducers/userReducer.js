@@ -128,7 +128,6 @@ export const updateUserThunk = createAsyncThunk(
   async (args, thunkAPI) => {
     const state = thunkAPI.getState();
     const { currentUser } = state.userReducer;
-    // console.log(currentUser,args.formData);
     try {
       const resp = await fetch(`/api/user/update/${currentUser._id}`, {
         method: "PUT",
@@ -152,7 +151,6 @@ export const deleteUserThunk = createAsyncThunk(
   async (args, thunkAPI) => {
     // const state = thunkAPI.getState();
     // const { currentUser } = state.userReducer;
-    // console.log(currentUser);
     try {
       const resp = await fetch(`/api/user/delete/${args}`, {
         method: "DELETE",
@@ -366,7 +364,6 @@ export const userSlice = createSlice({
         state.error = null;
       })
       .addCase(signoutUserThunk.fulfilled, (state, action) => {
-        // console.log(action.payload);
         state.loading = false;
         state.error = null;
         state.currentUser = null;
@@ -409,7 +406,6 @@ export const userSlice = createSlice({
         state.error = null;
       })
       .addCase(deleteUserByAdminThunk.fulfilled, (state, action) => {
-        // console.log(action.payload);
         state.loading = false;
         state.error = null;
         state.allUsers = state.allUsers.filter(

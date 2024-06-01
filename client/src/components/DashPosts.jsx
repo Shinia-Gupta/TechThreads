@@ -35,7 +35,6 @@ function DashPosts() {
 
 const handleDeletePost=async()=>{
   const resultAction=await dispatch(deletePostThunk(currentPostToDelete));
-  console.log(resultAction);
   setShowDeleteModal(false)
 }
 

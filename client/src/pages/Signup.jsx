@@ -25,7 +25,6 @@ const dispatch=useDispatch();
   const handleSubmit = async (e) => {
     e.preventDefault();
     const resultAction=await dispatch(signupThunk(formData));
-    console.log(resultAction);
     if(signupThunk.fulfilled.match(resultAction)){
       navigate('/signin')
     }
