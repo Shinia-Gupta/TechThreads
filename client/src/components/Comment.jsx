@@ -31,7 +31,6 @@ useEffect(()=>{
 const handleEdit=()=>{
     setEditedContent(comment.content)
     setEditing(true);
-    console.log(editedContent);
 }
 const handleSubmission=async ()=>{
 const resultAction=await dispatch(updateCommentThunk({comment,editedContent}));

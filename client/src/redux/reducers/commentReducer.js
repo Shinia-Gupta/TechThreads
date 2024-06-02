@@ -4,7 +4,8 @@ const initialState = {
   error: null,
   message: null,
   loading: false,
- comments:[]
+ comments:[],
+ allComments:[]
 };
 
 
@@ -124,29 +125,48 @@ export const deleteCommentThunk = createAsyncThunk(
   }
 );
 
-// export const getMorePostsThunk = createAsyncThunk(
-//   "post/getMorePost",
-//   async (args, thunkAPI) => {
-//     try {
-//       const state = thunkAPI.getState();
-//       const userState = userSelector(state);
-//       const { currentUser } = userState;
-//       const resp = await fetch(
-//         `/api/post/get-posts?userId=${currentUser._id}&startIndex=${args}`,
-//         {
-//           method: "GET",
-//         }
-//       );
-//       const data = await resp.json();
-//       if (!resp.ok) {
-//         return thunkAPI.rejectWithValue(data.message);
-//       }
-//       return data;
-//     } catch (error) {
-//       thunkAPI.rejectWithValue(error.message);
-//     }
-//   }
-// );
+
+export const getAllCommentsThunk=createAsyncThunk('comment/getAllComments',async (args,thunkAPI)=>{
+  try {
+    const resp = await fetch(
+      `/api/comment/get-comments?startIndex=${args}`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await resp.json();
+    if (!resp.ok) {
+      return thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
+export const getMoreCommentsThunk = createAsyncThunk(
+  "comment/getMoreComments",
+  async (args, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState();
+      const userState = userSelector(state);
+      const { currentUser } = userState;
+      const resp = await fetch(
+        `/api/comment/get-comments?startIndex=${args}`,
+        {
+          method: "GET",
+        }
+      );
+      const data = await resp.json();
+      if (!resp.ok) {
+        return thunkAPI.rejectWithValue(data.message);
+      }
+      return data;
+    } catch (error) {
+      thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
 
 // export const getAPostThunk=createAsyncThunk('post/getPostById',async (args,thunkAPI)=>{
 //   try {
@@ -177,12 +197,14 @@ export const commentSlice = createSlice({
       
       .addCase(createCommentThunk.pending, (state) => {
         state.loading = true;
-        state.error = null; // Clear previous errors
+        state.error = null; 
       })
       .addCase(createCommentThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
         state.comments=[...state.comments,action.payload];
+        state.allComments = [...state.allComments, action.payload];
+
       })
       .addCase(createCommentThunk.rejected, (state, action) => {
         state.loading = false;
@@ -196,7 +218,6 @@ export const commentSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.comments =[... action.payload];
-        // state.showMore = action.payload.posts.length < 9 ? false : true;
       })
       .addCase(getCommentsThunk.rejected, (state, action) => {
         state.loading = false;
@@ -248,24 +269,40 @@ export const commentSlice = createSlice({
         state.comments = state.comments.filter(
           (comment) => comment._id != action.payload
         );
+        state.allComments = state.allComments.filter(
+          (comment) => comment._id != action.payload
+        );
       })
       .addCase(deleteCommentThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-    //   .addCase(getMorePostsThunk.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(getMorePostsThunk.fulfilled, (state, action) => {
-    //     state.loading = false;
-    //     state.error = null;
-    //     state.userPosts = [...state.userPosts, ...action.payload.posts];
-    //   })
-    //   .addCase(getMorePostsThunk.rejected, (state, action) => {
-    //     state.loading = false;
-    //     state.error = action.payload;
-    //   })
+      .addCase(getAllCommentsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllCommentsThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.allComments =[... action.payload.comments];
+      })
+      .addCase(getAllCommentsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getMoreCommentsThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getMoreCommentsThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.allComments = [...state.allComments, ...action.payload.comments];
+      })
+      .addCase(getMoreCommentsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
     
   },
 });

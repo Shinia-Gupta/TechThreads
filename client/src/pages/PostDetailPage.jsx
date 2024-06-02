@@ -27,7 +27,6 @@ useEffect(()=>{
 async function fetchRecentPosts(){
 const resultAction=await dispatch(fetchRecentPostsThunk());
 if(fetchRecentPostsThunk.fulfilled.match(resultAction)){
-  console.log(resultAction.payload);
   setRecentPosts(resultAction.payload.posts);
 }
 }
