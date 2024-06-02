@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import {Sidebar} from 'flowbite-react';
-import {HiUser,HiArrowSmRight, HiDocumentText, HiOutlineUserGroup, HiAnnotation} from 'react-icons/hi';
+import {HiUser,HiArrowSmRight, HiDocumentText, HiOutlineUserGroup, HiAnnotation, HiChartPie} from 'react-icons/hi';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { signoutUserThunk, userSelector } from '../redux/reducers/userReducer';
@@ -28,7 +28,7 @@ dispatch(signoutUserThunk())
 <Sidebar.Items>
 <Sidebar.ItemGroup className='flex flex-col gap-1'>
 <Link to='/dashboard?tab=dashboard'>
-    <Sidebar.Item as={'div'} active={tab==='dashboard'} icon={HiUser}  labelColor='dark'>Dashboard</Sidebar.Item>
+    <Sidebar.Item as={'div'} active={tab==='dashboard'} icon={HiChartPie}  labelColor='dark'>Dashboard</Sidebar.Item>
     </Link>
     <Link to='/dashboard?tab=profile'>
     <Sidebar.Item as={'div'} active={tab==='profile'} icon={HiUser} label={currentUser.isAdmin?'Admin':'User'}  labelColor='dark'>Profile</Sidebar.Item>
