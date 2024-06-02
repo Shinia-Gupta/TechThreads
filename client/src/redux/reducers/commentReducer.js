@@ -5,7 +5,9 @@ const initialState = {
   message: null,
   loading: false,
  comments:[],
- allComments:[]
+ allComments:[],
+ lastMonthComments:0,
+ totalComments:0
 };
 
 
@@ -129,7 +131,7 @@ export const deleteCommentThunk = createAsyncThunk(
 export const getAllCommentsThunk=createAsyncThunk('comment/getAllComments',async (args,thunkAPI)=>{
   try {
     const resp = await fetch(
-      `/api/comment/get-comments?startIndex=${args}`,
+      `/api/comment/get-comments`,
       {
         method: "GET",
       }
@@ -168,22 +170,24 @@ export const getMoreCommentsThunk = createAsyncThunk(
   }
 );
 
-// export const getAPostThunk=createAsyncThunk('post/getPostById',async (args,thunkAPI)=>{
-//   try {
+export const fetchCommentsForDashThunk=createAsyncThunk('comment/getcommentfordash',async (args,thunkAPI)=>{
+  try {
+    const resp = await fetch(
+      `/api/comment/get-comments?limit=5`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await resp.json();
+    if (!resp.ok) {
+      return thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
 
-//       const resp=await fetch(`/api/post/get-posts?postId=${args}`,{
-//           method:"GET"
-//       })
-//       const data=await resp.json();
-//       if(!resp.ok){
-//          return thunkAPI.rejectWithValue(data.message);
-//       }
-//       return data;
-//   } catch (error) {
-//       thunkAPI.rejectWithValue(error.message);
-
-//   }
-//   })
 
 
 export const commentSlice = createSlice({
@@ -254,6 +258,12 @@ export const commentSlice = createSlice({
           }
           return comment;
         });
+        state.allComments =state.allComments.map((comment)=>{
+          if(comment._id===action.payload._id){
+            return action.payload
+          }
+          return comment;
+        });
       })
       .addCase(updateCommentThunk.rejected, (state, action) => {
         state.loading = false;
@@ -285,6 +295,7 @@ export const commentSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.allComments =[... action.payload.comments];
+        state.comments =[... action.payload.comments];
       })
       .addCase(getAllCommentsThunk.rejected, (state, action) => {
         state.loading = false;
@@ -298,8 +309,24 @@ export const commentSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.allComments = [...state.allComments, ...action.payload.comments];
+        state.comments = [...state.comments, ...action.payload.comments];
       })
       .addCase(getMoreCommentsThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchCommentsForDashThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchCommentsForDashThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.comments =[... action.payload.comments];
+        state.totalComments=action.payload.totalComments;
+        state.lastMonthComments=action.payload.lastMonthComments
+      })
+      .addCase(fetchCommentsForDashThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

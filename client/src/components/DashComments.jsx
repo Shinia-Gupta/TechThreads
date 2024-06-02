@@ -9,16 +9,15 @@ import { HiOutlineExclamationCircle } from "react-icons/hi";
 function DashComments() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector(userSelector);
-  const { allComments } = useSelector(commentSelector);
+  const { comments } = useSelector(commentSelector);
   const [showMore,setShowMore]=useState(true);
   const [showDeleteModal,setShowDeleteModal]=useState(false);
   const [commentToDelete,setCommentToDelete]=useState(null);
 
 
   async function fetchComments() {
-    const startIndex=allComments?.length;
 
-   const resultAction= await dispatch(getAllCommentsThunk(startIndex?startIndex:0));
+   const resultAction= await dispatch(getAllCommentsThunk());
   }
 
   useEffect(() => {
@@ -47,7 +46,7 @@ setShowDeleteModal(false);
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
-      {currentUser.isAdmin && allComments?.length > 0 ? (
+      {currentUser.isAdmin && comments?.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
@@ -58,7 +57,7 @@ setShowDeleteModal(false);
               <Table.HeadCell>User Id</Table.HeadCell>
               <Table.HeadCell>Delete</Table.HeadCell>
             </Table.Head>
-            {allComments.map((comment) => (
+            {comments.map((comment) => (
               <Table.Body key={comment._id} className="divide-y">
                 <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
                   <Table.Cell>

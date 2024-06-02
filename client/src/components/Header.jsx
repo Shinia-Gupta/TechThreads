@@ -4,14 +4,16 @@ import { Link,useLocation } from 'react-router-dom'
 import {AiOutlineSearch} from 'react-icons/ai';
 import {FaMoon, FaSun} from 'react-icons/fa'
 import {useDispatch, useSelector} from 'react-redux';
-import {userSelector} from '../redux/reducers/userReducer';
+import {signoutUserThunk, userSelector} from '../redux/reducers/userReducer';
 import { themeActions, themeSelector } from '../redux/reducers/themeReducer';
 function Header() {
     const path=useLocation();
     const {currentUser}=useSelector(userSelector);
     const {theme}=useSelector(themeSelector);
     const dispatch=useDispatch();
-
+    const handleSignout=()=>{
+        dispatch(signoutUserThunk())
+            }
     return (
         <Navbar className='border-b-2'>
             <Link to={"/"} className='self-center whitespace-nowrap text-sm sm:text-xl font-semibold dark:text-white'>
@@ -40,7 +42,7 @@ function Header() {
                  <Dropdown.Item>Profile</Dropdown.Item>
              </Link>
              <Dropdown.Divider/>
-             <Dropdown.Item>Sign Out</Dropdown.Item>
+             <Dropdown.Item onClick={handleSignout}>Sign Out</Dropdown.Item>
                 </Dropdown>
                ):(
                  <Link to={'/signin'}>

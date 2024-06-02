@@ -16,6 +16,8 @@ const initialState = {
   imageFileUploadProgress: null,
   imageFileUrl: null,
   allUsers: [],
+  totalUsers:0,
+  lastMonthUsers:0
 };
 
 export const signupThunk = createAsyncThunk(
@@ -267,6 +269,23 @@ export const getUserForCommentThunk=createAsyncThunk('user/getUserForComment',as
   }
 })
 
+export const fetchUsersForDashThunk=createAsyncThunk('user/getuserfordash',async (args,thunkAPI)=>{
+  try {
+    const resp = await fetch(
+      `/api/user/getusers?limit=5`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await resp.json();
+    if (!resp.ok) {
+      return thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
 
 export const userSlice = createSlice({
   name: "user",
@@ -354,6 +373,7 @@ export const userSlice = createSlice({
         state.allUsers = state.allUsers.filter(
           (user) => user._id !== action.payload
         );
+       
       })
       .addCase(deleteUserThunk.rejected, (state, action) => {
         state.loading = false;
@@ -383,6 +403,7 @@ export const userSlice = createSlice({
         state.loading = false;
         state.error = null;
         state.allUsers = action.payload.users;
+       
       })
       .addCase(getUsersThunk.rejected, (state, action) => {
         state.loading = false;
@@ -411,11 +432,27 @@ export const userSlice = createSlice({
         state.allUsers = state.allUsers.filter(
           (user) => user._id !== action.payload
         );
+
       })
       .addCase(deleteUserByAdminThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
+      })
+      .addCase(fetchUsersForDashThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchUsersForDashThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.allUsers =[... action.payload.users];
+        state.totalUsers=action.payload.totalUsers;
+        state.lastMonthUsers=action.payload.lastMonthUsers
+      })
+      .addCase(fetchUsersForDashThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
   },
 });
 

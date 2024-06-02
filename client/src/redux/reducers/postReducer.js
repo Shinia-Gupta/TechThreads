@@ -14,7 +14,9 @@ const initialState = {
   imageFileUploadProgress: null,
   imageFileUrl: null,
   userPosts: [],
-  currentPostDetail:{}
+  currentPostDetail:{},
+  totalPosts:0,
+  lastMonthPosts:0
 };
 
 export const uploadPostImageThunk = createAsyncThunk(
@@ -224,6 +226,25 @@ export const fetchRecentPostsThunk=createAsyncThunk('post/fetchRecentposts',asyn
   }
 })
 
+
+export const fetchPostsForDashThunk=createAsyncThunk('post/getpostfordash',async (args,thunkAPI)=>{
+  try {
+    const resp = await fetch(
+      `/api/post/get-posts?limit=5`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await resp.json();
+    if (!resp.ok) {
+      return thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
 export const postSlice = createSlice({
   name: "post",
   initialState,
@@ -329,6 +350,21 @@ export const postSlice = createSlice({
         state.currentPostDetail=action.payload.posts[0];
       })
       .addCase(getAPostBySlugThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchPostsForDashThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPostsForDashThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.posts =[... action.payload.posts];
+        state.totalPosts=action.payload.totalPosts;
+        state.lastMonthPosts=action.payload.lastMonthPosts
+      })
+      .addCase(fetchPostsForDashThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
