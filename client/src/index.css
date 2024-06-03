@@ -2,46 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
+body {
     height: 100vh;
 }
 
-.ql-editor{
+.ql-editor {
     font-size: 1.25rem;
 }
 
-.post-content p{
-    margin-bottom:0.5rem;
+.post-content p {
+    margin-bottom: 0.5rem;
     font-size: 1rem;
 
 }
 
-.post-content h1{
+.post-content h1 {
     font-size: 1.5rem;
     font-weight: 600;
-    font-family:  Verdana, Geneva, Tahoma, sans-serif;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
     margin: 1.5rem 0;
 
 }
 
-.post-content h2{
+.post-content h2 {
     font-size: 1.4rem;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+
 }
 
-.post-content h3{
+.post-content h3 {
     font-size: 1.2rem;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.post-content a{
+.post-content a {
     color: dodgerblue;
 }
 
-.post-content a:hover{
+.post-content a:hover {
     text-decoration: underline;
 }
 
- .dark .post-content a{
+.dark .post-content a {
     color: rgb(223, 92, 223);
+}
+
+.ql-syntax {
+    background-color: #2d2d2d;
+    /* A slightly lighter black for less strain */
+    color: #f8f8f2;
+    /* A softer white color */
+    padding: 15px;
+    /* More padding for better readability */
+    border-radius: 5px;
+    /* Rounded corners */
+    font-family: 'Courier New', Courier, monospace;
+    /* Monospaced font */
+    font-size: 14px;
+    /* Slightly larger font size */
+    overflow-x: auto;
+    /* Allow horizontal scrolling for long lines */
+    white-space: pre;
+    /* Preserve whitespace formatting */
 }

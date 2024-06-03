@@ -13,12 +13,12 @@ const postSchema = new mongoose.Schema(
     title: {
       type: String,
       required: [true, "Title is required"],
-      minlength: [3, "Title must be at least 3 characters"],
-      maxlength: [50, "Title must be at most 50 characters"],
+      minlength: [5, "Title must be at least 5 characters"],
     },
     image: {
       type: String,
-      default:"https://www.mindinventory.com/blog/wp-content/uploads/2022/03/react-nodejs.webp"
+      default:
+        "https://www.mindinventory.com/blog/wp-content/uploads/2022/03/react-nodejs.webp",
     },
     category: {
       type: String,

@@ -67,18 +67,13 @@ function UpdatePost() {
     const sanitizedContent = sanitizeHtml(formData.content, {
       allowedTags: [],
     }).trim();
-    const trimmedTitle = formData.title.trim();
 
     if (sanitizedContent.length === 0) {
       setPublishError("Content cannot be empty or only spaces.");
       return;
     }
 
-    if (trimmedTitle.length === 0) {
-      setPublishError("Title cannot be only spaces.");
-      return;
-    }
-    const resultAction = await dispatch(updatePostThunk({ formData }));
+    const resultAction = await dispatch(updatePostThunk({ formData,postId }));
     if (
       updatePostThunk.rejected.match(resultAction) &&
       !resultAction.payload.success
@@ -120,7 +115,6 @@ function UpdatePost() {
                 setFormData({ ...formData, category: e.target.value })
               }
               value={formData.category}
-
             >
               <option value="uncategorized">Select a category</option>
               <option value="javascript">JavaScript</option>
@@ -162,8 +156,6 @@ function UpdatePost() {
               src={formData.image}
               alt="upload"
               className="w-full h-72 object-cover"
-             
-
             />
           )}
           <ReactQuill
@@ -174,7 +166,8 @@ function UpdatePost() {
             onChange={(value) => {
               setFormData({ ...formData, content: value });
             }}
-           value= {formData.content}
+            value={formData.content}
+           
           />
 
           <Button

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
-import { app } from "../../config/firebaseInit.js";
+import { app } from "../../../firebaseInit.js";
 import {
   getDownloadURL,
   getStorage,

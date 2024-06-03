@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { app } from "../../config/firebaseInit.js";
+import { app } from "../../../firebaseInit.js";
 import {
   getDownloadURL,
   getStorage,
@@ -164,7 +164,7 @@ export const updatePostThunk = createAsyncThunk(
     const { currentUser } = userState;
     try {
       const resp = await fetch(
-        `/api/post/update-post/${args.formData._id}/${currentUser._id}`,
+        `/api/post/update-post/${args.postId}/${currentUser._id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -413,7 +413,7 @@ export const postSlice = createSlice({
       .addCase(fetchPostsForHomeThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.posts =[... action.payload.posts];
+        state.userPosts=[... action.payload.posts];
         state.totalPosts=action.payload.totalPosts;
         state.lastMonthPosts=action.payload.lastMonthPosts
       })
@@ -428,7 +428,7 @@ export const postSlice = createSlice({
       .addCase(fetchPostsBySearchAndSortThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.error = null;
-        state.posts =[... action.payload.posts];
+        state.userPosts =[... action.payload.posts];
         })
       .addCase(fetchPostsBySearchAndSortThunk.rejected, (state, action) => {
         state.loading = false;

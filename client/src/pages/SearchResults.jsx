@@ -11,7 +11,7 @@ export default function SearchResult() {
     sort: 'desc',
     category: 'uncategorized',
   });
-const {posts,loading}=useSelector(postSelector);
+const {userPosts,loading}=useSelector(postSelector);
   const [showMore, setShowMore] = useState(false);
 
   const location = useLocation();
@@ -142,13 +142,13 @@ const dispatch=useDispatch();
           Posts results:
         </h1>
         <div className='p-7 flex flex-wrap gap-4'>
-          {!loading && posts.length === 0 && (
+          {!loading && userPosts.length === 0 && (
             <p className='text-xl text-gray-500'>No posts found.</p>
           )}
           {loading && <p className='text-xl text-gray-500'>Loading...</p>}
           {!loading &&
-            posts &&
-            posts.map((post) => <PostCard key={post._id} post={post} />)}
+            userPosts &&
+            userPosts.map((post) => <PostCard key={post._id} post={post} />)}
           {showMore && (
             <button
               onClick={handleShowMore}

@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { userSelector,getUsersThunk,getMoreUsersThunk, deleteUserThunk, deleteUserByAdminThunk } from "../redux/reducers/userReducer";
+import {
+  userSelector,
+  getUsersThunk,
+  getMoreUsersThunk,
+  deleteUserThunk,
+  deleteUserByAdminThunk,
+} from "../redux/reducers/userReducer";
 
 import { Button, Modal, Table } from "flowbite-react";
 import { Link } from "react-router-dom";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
-import {FaCheck,FaTimes} from 'react-icons/fa'
+import { FaCheck, FaTimes } from "react-icons/fa";
 // import { dashuserSelector, } from "../redux/reducers/dashUserReducer";
 function DashUsers() {
   const dispatch = useDispatch();
-  const { currentUser,allUsers } = useSelector(userSelector);
-  const [showMore,setShowMore]=useState(true);
-  const [showDeleteModal,setShowDeleteModal]=useState(false);
-  const [currentUserToDelete,setCurrentUserToDelete]=useState(null);
-
+  const { currentUser, allUsers } = useSelector(userSelector);
+  const [showMore, setShowMore] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [currentUserToDelete, setCurrentUserToDelete] = useState(null);
 
   async function fetchUsers() {
-    const startIndex=allUsers.length;
+    const startIndex = allUsers.length;
 
     await dispatch(getUsersThunk(startIndex));
   }
@@ -27,23 +32,24 @@ function DashUsers() {
     }
   }, [currentUser._id]);
 
-
-  const handleShowMore=async ()=>{
-    const startIndex=allUsers.length;
-    const resultAction=await dispatch(getMoreUsersThunk(startIndex))
-    if(getMoreUsersThunk.fulfilled.match(resultAction)){
-      if(resultAction.payload.users.length<9){
-        setShowMore(false)
+  const handleShowMore = async () => {
+    const startIndex = allUsers.length;
+    const resultAction = await dispatch(getMoreUsersThunk(startIndex));
+    if (getMoreUsersThunk.fulfilled.match(resultAction)) {
+      if (resultAction.payload.users.length < 9) {
+        setShowMore(false);
       }
     }
-  }
+  };
 
-const handleDeleteUserByAdmin=async()=>{
-  const resultAction=await dispatch(deleteUserByAdminThunk(currentUserToDelete));
-  if(deleteUserByAdminThunk.fulfilled.match(resultAction)){
-setShowDeleteModal(false);
-  }
-}
+  const handleDeleteUserByAdmin = async () => {
+    const resultAction = await dispatch(
+      deleteUserByAdminThunk(currentUserToDelete)
+    );
+    if (deleteUserByAdminThunk.fulfilled.match(resultAction)) {
+      setShowDeleteModal(false);
+    }
+  };
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 dark:scrollbar-track-slate-700 dark:scrollbar-thumb-slate-500">
@@ -65,36 +71,44 @@ setShowDeleteModal(false);
                     {new Date(user.createdAt).toLocaleDateString()}
                   </Table.Cell>
                   <Table.Cell>
-                   
-                      {
-                        <img
-                          src={user.profilePicture}
-                          alt={user.title}
-                          className="w-10 h-10 object-cover bg-gray-500 rounded-full"
-                        />
-                      }
-                   
+                    {
+                      <img
+                        src={user.profilePicture}
+                        alt={user.title}
+                        className="w-10 h-10 object-cover bg-gray-500 rounded-full"
+                      />
+                    }
                   </Table.Cell>
-                  <Table.Cell>
-                   
-                      {user.username}
-               
-                  </Table.Cell>
+                  <Table.Cell>{user.username}</Table.Cell>
                   <Table.Cell>{user.email}</Table.Cell>
-                  <Table.Cell>{user.isAdmin?<FaCheck className='text-green-500'/>:<FaTimes className='text-red-500'/>}</Table.Cell>
+                  <Table.Cell>
+                    {user.isAdmin ? (
+                      <FaCheck className="text-green-500" />
+                    ) : (
+                      <FaTimes className="text-red-500" />
+                    )}
+                  </Table.Cell>
 
                   <Table.Cell>
-                    <span onClick={()=>{setShowDeleteModal(true);setCurrentUserToDelete(user._id)}} className="text-red-500 font-medium hover:underline cursor-pointer">
+                    <span
+                      onClick={() => {
+                        setShowDeleteModal(true);
+                        setCurrentUserToDelete(user._id);
+                      }}
+                      className="text-red-500 font-medium hover:underline cursor-pointer"
+                    >
                       Delete
                     </span>
                   </Table.Cell>
-                 
                 </Table.Row>
               </Table.Body>
             ))}
           </Table>
           {showMore && (
-            <button onClick={handleShowMore} className="w-full text-teal-500 self-center text-sm py-7">
+            <button
+              onClick={handleShowMore}
+              className="w-full text-teal-500 self-center text-sm py-7"
+            >
               Show More
             </button>
           )}
@@ -102,24 +116,24 @@ setShowDeleteModal(false);
       ) : (
         <p>You have no users yet!</p>
       )}
-       <Modal
+      <Modal
         show={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         popup
-        size='md'
+        size="md"
       >
         <Modal.Header />
         <Modal.Body>
-          <div className='text-center'>
-            <HiOutlineExclamationCircle className='h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto' />
-            <h3 className='mb-5 text-lg text-gray-500 dark:text-gray-400'>
+          <div className="text-center">
+            <HiOutlineExclamationCircle className="h-14 w-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
               Are you sure you want to delete this user?
             </h3>
-            <div className='flex justify-center gap-4'>
-              <Button color='failure' onClick={handleDeleteUserByAdmin}>
+            <div className="flex justify-center gap-4">
+              <Button color="failure" onClick={handleDeleteUserByAdmin}>
                 Yes, I'm sure
               </Button>
-              <Button color='gray' onClick={() => setShowDeleteModal(false)}>
+              <Button color="gray" onClick={() => setShowDeleteModal(false)}>
                 No, cancel
               </Button>
             </div>

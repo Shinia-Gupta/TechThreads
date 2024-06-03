@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { fetchPostsForHomeThunk, postSelector } from '../redux/reducers/postReducer'
 function Home() {
 const dispatch=useDispatch();
-const {posts}=useSelector(postSelector);
+const {userPosts}=useSelector(postSelector);
 
     useEffect(()=>{
     dispatch(fetchPostsForHomeThunk());
@@ -34,11 +34,11 @@ const {posts}=useSelector(postSelector);
         </div>
   
         <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 py-7'>
-          {posts && posts.length > 0 && (
+          {userPosts && userPosts.length > 0 && (
             <div className='flex flex-col gap-6'>
               <h2 className='text-2xl font-semibold text-center'>Recent Posts</h2>
               <div className='flex flex-wrap gap-4'>
-                {posts.map((post) => (
+                {userPosts.map((post) => (
                   <PostCard key={post._id} post={post} />
                 ))}
               </div>
