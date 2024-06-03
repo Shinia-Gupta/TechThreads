@@ -1,7 +1,3 @@
-Sure, here’s a detailed README file for the "Tech Threads" project based on the features discussed:
-
----
-
 # Tech Threads
 
 Tech Threads is a blogging platform built using the MERN (MongoDB, Express.js, React, Node.js) stack with additional tooling like Vite for the front-end development. This platform allows admins to create, edit, and publish blog posts and also edit or delete comments and users. It supports rich text editing with syntax highlighting for code snippets using `ReactQuill`.
