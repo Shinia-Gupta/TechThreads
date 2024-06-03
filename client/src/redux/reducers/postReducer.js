@@ -263,6 +263,26 @@ export const fetchPostsForHomeThunk=createAsyncThunk('post/fetchRecentposts',asy
     thunkAPI.rejectWithValue(error.message);
   }
 })
+
+export const fetchPostsBySearchAndSortThunk=createAsyncThunk('post/fetchPostBySearch',async(args,thunkAPI)=>{
+  try {
+    const resp = await fetch(
+      `/api/post/get-posts?${args}`,
+      {
+        method: "GET",
+      }
+    );
+    const data = await resp.json();
+
+    if (!resp.ok) {
+      thunkAPI.rejectWithValue(data.message);
+    }
+    return data;
+  } catch (error) {
+    thunkAPI.rejectWithValue(error.message);
+  }
+})
+
 export const postSlice = createSlice({
   name: "post",
   initialState,
@@ -398,6 +418,19 @@ export const postSlice = createSlice({
         state.lastMonthPosts=action.payload.lastMonthPosts
       })
       .addCase(fetchPostsForHomeThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchPostsBySearchAndSortThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchPostsBySearchAndSortThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.error = null;
+        state.posts =[... action.payload.posts];
+        })
+      .addCase(fetchPostsBySearchAndSortThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
