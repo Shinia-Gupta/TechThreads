@@ -28,11 +28,11 @@ function Dashboard({isAdmin}) {
         {/* Profile  */}
         {tab === "profile" && <DashProfile/>}
         {/* Posts  */}
-        {tab === "posts" && <DashPosts/>}
+        {tab === "posts" && <DashPosts/> && isAdmin}
         {/* Users  */}
-        {tab === "users" && <DashUsers/>}
+        {tab === "users" && <DashUsers/> && isAdmin}
         {/* Comments  */}
-        {tab === "comments" && <DashComments/>}
+        {tab === "comments" && <DashComments/> && isAdmin}
         {/* Dashboard  */}
         {tab === "dashboard" && <DashboardComponent/>}
     </div>
