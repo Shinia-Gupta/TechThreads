@@ -33,6 +33,8 @@ function DashSidebar() {
     <Sidebar className="w-full md:w-56">
       <Sidebar.Items>
         <Sidebar.ItemGroup className="flex flex-col gap-1">
+          {currentUser.isAdmin && (
+      <>
           <Link to="/dashboard?tab=dashboard">
             <Sidebar.Item
               as={"div"}
@@ -42,7 +44,7 @@ function DashSidebar() {
             >
               Dashboard
             </Sidebar.Item>
-          </Link>
+          </Link></>)}
           <Link to="/dashboard?tab=profile">
             <Sidebar.Item
               as={"div"}
