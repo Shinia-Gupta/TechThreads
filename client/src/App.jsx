@@ -26,8 +26,8 @@ function App() {
           <Route path="/signup" element={<Signup />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/search" element={<SearchResults />} />
-          <Route element={<PrivateRoute isAdmin={false}/>}>
-            <Route path="/dashboard" element={<Dashboard isAdmin={false} />} />
+          <Route element={<PrivateRoute isAdmin={true}/>}>
+            <Route path="/dashboard" element={<Dashboard isAdmin={true} />} />
           </Route>
           <Route element={<PrivateRoute isAdmin={true}/>}>
             <Route path="/create-post" element={<CreatePost />} />
